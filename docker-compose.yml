@@ -25,6 +25,7 @@ services:
     volumes:
       - db_data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./mysql_data:/var/lib/mysql
     networks:
       - auto_track-network
 
