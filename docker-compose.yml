@@ -32,4 +32,4 @@ volumes:
   db_data:
 
 networks:
-  clynelish-network:
+  auto_track-network:
