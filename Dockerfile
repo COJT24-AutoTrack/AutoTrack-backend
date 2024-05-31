@@ -4,7 +4,9 @@ ARG DATABASE_URL
 
 ENV DATABASE_URL=${DATABASE_URL}
 
-RUN apt-get update && apt-get install -y libmysqlclient-dev
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    default-libmysqlclient-dev
 
 WORKDIR /auto_track-backend
 
