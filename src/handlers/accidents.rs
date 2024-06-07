@@ -19,8 +19,8 @@ pub async fn create_accident(
         Accident,
         r#"
         INSERT INTO Accidents (car_id, accident_date, accident_description)
-        VALUES ($1, $2, $3)
-        RETURNING accident_id, car_id, accident_date, accident_description, created_at, updated_at
+        VALUES (?, ?, ?)
+        RETURNING accident_id, car_id, accident_date as "accident_date: _", accident_description, created_at, updated_at
         "#,
         new_accident.car_id,
         new_accident.accident_date,
@@ -60,7 +60,7 @@ pub async fn get_accident(
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query_as!(Accident, "SELECT * FROM Accidents WHERE accident_id = $1", id)
+    match query_as!(Accident, "SELECT * FROM Accidents WHERE accident_id = ?", id)
         .fetch_one(&db_pool)
         .await
     {
@@ -83,9 +83,9 @@ pub async fn update_accident(
         Accident,
         r#"
         UPDATE Accidents
-        SET car_id = $1, accident_date = $2, accident_description = $3, updated_at = CURRENT_TIMESTAMP
-        WHERE accident_id = $4
-        RETURNING accident_id, car_id, accident_date, accident_description, created_at, updated_at
+        SET car_id = ?, accident_date = ?, accident_description = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE accident_id = ?
+        RETURNING accident_id, car_id, accident_date as "accident_date: _", accident_description, created_at, updated_at
         "#,
         updated_accident.car_id,
         updated_accident.accident_date,
@@ -109,7 +109,7 @@ pub async fn delete_accident(
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query!("DELETE FROM Accidents WHERE accident_id = $1", id)
+    match query!("DELETE FROM Accidents WHERE accident_id = ?", id)
         .execute(&db_pool)
         .await
     {

@@ -21,12 +21,10 @@ pub async fn create_car(
     match result {
         Ok(mut tx) => {
             // 車を作成
-            let car_result = query_as!(
-                Car,
+            let car_result = query!(
                 r#"
                 INSERT INTO Cars (car_name, carmodelnum, car_color, car_milage, car_isflooding, car_issmoked)
-                VALUES ($1, $2, $3, $4, $5, $6)
-                RETURNING car_id, car_name, carmodelnum, car_color, car_milage, car_isflooding, car_issmoked, created_at, updated_at
+                VALUES (?, ?, ?, ?, ?, ?)
                 "#,
                 car.car_name,
                 car.carmodelnum,
@@ -35,19 +33,25 @@ pub async fn create_car(
                 car.car_isflooding,
                 car.car_issmoked
             )
-            .fetch_one(&mut tx)
+            .execute(&mut tx)
             .await;
 
             match car_result {
-                Ok(car) => {
+                Ok(res) => {
+                    let car_id = res.last_insert_id();
+                    let car = query_as!(Car, "SELECT * FROM Cars WHERE car_id = ?", car_id)
+                        .fetch_one(&mut tx)
+                        .await
+                        .unwrap();
+
                     // user_carテーブルにエントリを追加
                     let user_car_result = query!(
                         r#"
                         INSERT INTO user_car (user_id, car_id)
-                        VALUES ($1, $2)
+                        VALUES (?, ?)
                         "#,
                         user_id,
-                        car.car_id
+                        car_id
                     )
                     .execute(&mut tx)
                     .await;
@@ -101,7 +105,7 @@ pub async fn get_car(
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query_as!(Car, "SELECT * FROM Cars WHERE car_id = $1", id)
+    match query_as!(Car, "SELECT * FROM Cars WHERE car_id = ?", id)
         .fetch_one(&db_pool)
         .await
     {
@@ -120,13 +124,11 @@ pub async fn update_car(
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query_as!(
-        Car,
+    let result = query!(
         r#"
         UPDATE Cars
-        SET car_name = $1, carmodelnum = $2, car_color = $3, car_milage = $4, car_isflooding = $5, car_issmoked = $6, updated_at = CURRENT_TIMESTAMP
-        WHERE car_id = $7
-        RETURNING car_id, car_name, carmodelnum, car_color, car_milage, car_isflooding, car_issmoked, created_at, updated_at
+        SET car_name = ?, carmodelnum = ?, car_color = ?, car_milage = ?, car_isflooding = ?, car_issmoked = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE car_id = ?
         "#,
         updated_car.car_name,
         updated_car.carmodelnum,
@@ -136,10 +138,22 @@ pub async fn update_car(
         updated_car.car_issmoked,
         id
     )
-    .fetch_one(&db_pool)
-    .await
-    {
-        Ok(car) => (StatusCode::OK, Json(car)).into_response(),
+    .execute(&db_pool)
+    .await;
+
+    match result {
+        Ok(_) => {
+            match query_as!(Car, "SELECT * FROM Cars WHERE car_id = ?", id)
+                .fetch_one(&db_pool)
+                .await
+            {
+                Ok(car) => (StatusCode::OK, Json(car)).into_response(),
+                Err(e) => {
+                    eprintln!("Failed to fetch updated car: {:?}", e);
+                    StatusCode::INTERNAL_SERVER_ERROR.into_response()
+                }
+            }
+        }
         Err(e) => {
             eprintln!("Failed to update car: {:?}", e);
             StatusCode::INTERNAL_SERVER_ERROR.into_response()
@@ -159,7 +173,7 @@ pub async fn delete_car(
             // user_carテーブルからエントリを削除
             let user_car_result = query!(
                 r#"
-                DELETE FROM user_car WHERE car_id = $1
+                DELETE FROM user_car WHERE car_id = ?
                 "#,
                 id
             )
@@ -170,7 +184,7 @@ pub async fn delete_car(
                 Ok(_) => {
                     // Carsテーブルからエントリを削除
                     let car_result = query!(
-                        "DELETE FROM Cars WHERE car_id = $1",
+                        "DELETE FROM Cars WHERE car_id = ?",
                         id
                     )
                     .execute(&mut tx)

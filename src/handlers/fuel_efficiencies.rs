@@ -19,8 +19,8 @@ pub async fn create_fuel_efficiency(
         FuelEfficiency,
         r#"
         INSERT INTO FuelEfficiencies (car_id, fe_date, fe_amount, fe_unitprice, fe_milage)
-        VALUES ($1, $2, $3, $4, $5)
-        RETURNING fe_id, car_id, fe_date, fe_amount, fe_unitprice, fe_milage, created_at, updated_at
+        VALUES (?, ?, ?, ?, ?)
+        RETURNING fe_id, car_id, fe_date as "fe_date: _", fe_amount, fe_unitprice, fe_milage, created_at, updated_at
         "#,
         new_fuel_efficiency.car_id,
         new_fuel_efficiency.fe_date,
@@ -62,7 +62,7 @@ pub async fn get_fuel_efficiency(
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query_as!(FuelEfficiency, "SELECT * FROM FuelEfficiencies WHERE fe_id = $1", id)
+    match query_as!(FuelEfficiency, "SELECT * FROM FuelEfficiencies WHERE fe_id = ?", id)
         .fetch_one(&db_pool)
         .await
     {
@@ -85,9 +85,9 @@ pub async fn update_fuel_efficiency(
         FuelEfficiency,
         r#"
         UPDATE FuelEfficiencies
-        SET car_id = $1, fe_date = $2, fe_amount = $3, fe_unitprice = $4, fe_milage = $5, updated_at = CURRENT_TIMESTAMP
-        WHERE fe_id = $6
-        RETURNING fe_id, car_id, fe_date, fe_amount, fe_unitprice, fe_milage, created_at, updated_at
+        SET car_id = ?, fe_date = ?, fe_amount = ?, fe_unitprice = ?, fe_milage = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE fe_id = ?
+        RETURNING fe_id, car_id, fe_date as "fe_date: _", fe_amount, fe_unitprice, fe_milage, created_at, updated_at
         "#,
         updated_fuel_efficiency.car_id,
         updated_fuel_efficiency.fe_date,
@@ -113,7 +113,7 @@ pub async fn delete_fuel_efficiency(
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query!("DELETE FROM FuelEfficiencies WHERE fe_id = $1", id)
+    match query!("DELETE FROM FuelEfficiencies WHERE fe_id = ?", id)
         .execute(&db_pool)
         .await
     {

@@ -15,21 +15,33 @@ pub async fn create_user(
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query_as!(
-        User,
+    match query!(
         r#"
         INSERT INTO Users (user_email, user_name, user_password)
-        VALUES ($1, $2, $3)
-        RETURNING user_id, user_email, user_name, user_password, created_at, updated_at
+        VALUES (?, ?, ?)
         "#,
         new_user.user_email,
         new_user.user_name,
         new_user.user_password
     )
-    .fetch_one(&db_pool)
+    .execute(&db_pool)
     .await
     {
-        Ok(user) => (StatusCode::CREATED, Json(user)).into_response(),
+        Ok(_) => {
+            match query_as!(
+                User,
+                "SELECT * FROM Users WHERE user_email = ?",
+                new_user.user_email
+            )
+            .fetch_one(&db_pool)
+            .await {
+                Ok(user) => (StatusCode::CREATED, Json(user)).into_response(),
+                Err(e) => {
+                    eprintln!("Failed to fetch user after creation: {:?}", e);
+                    StatusCode::INTERNAL_SERVER_ERROR.into_response()
+                }
+            }
+        },
         Err(e) => {
             eprintln!("Failed to create user: {:?}", e);
             StatusCode::INTERNAL_SERVER_ERROR.into_response()
@@ -60,7 +72,7 @@ pub async fn get_user(
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query_as!(User, "SELECT * FROM Users WHERE user_id = $1", id)
+    match query_as!(User, "SELECT * FROM Users WHERE user_id = ?", id)
         .fetch_one(&db_pool)
         .await
     {
@@ -79,23 +91,31 @@ pub async fn update_user(
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query_as!(
-        User,
+    match query!(
         r#"
         UPDATE Users
-        SET user_email = $1, user_name = $2, user_password = $3, updated_at = CURRENT_TIMESTAMP
-        WHERE user_id = $4
-        RETURNING user_id, user_email, user_name, user_password, created_at, updated_at
+        SET user_email = ?, user_name = ?, user_password = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE user_id = ?
         "#,
         updated_user.user_email,
         updated_user.user_name,
         updated_user.user_password,
         id
     )
-    .fetch_one(&db_pool)
+    .execute(&db_pool)
     .await
     {
-        Ok(user) => (StatusCode::OK, Json(user)).into_response(),
+        Ok(_) => {
+            match query_as!(User, "SELECT * FROM Users WHERE user_id = ?", id)
+            .fetch_one(&db_pool)
+            .await {
+                Ok(user) => (StatusCode::OK, Json(user)).into_response(),
+                Err(e) => {
+                    eprintln!("Failed to fetch user after update: {:?}", e);
+                    StatusCode::INTERNAL_SERVER_ERROR.into_response()
+                }
+            }
+        },
         Err(e) => {
             eprintln!("Failed to update user: {:?}", e);
             StatusCode::INTERNAL_SERVER_ERROR.into_response()
@@ -109,7 +129,7 @@ pub async fn delete_user(
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query!("DELETE FROM Users WHERE user_id = $1", id)
+    match query!("DELETE FROM Users WHERE user_id = ?", id)
         .execute(&db_pool)
         .await
     {

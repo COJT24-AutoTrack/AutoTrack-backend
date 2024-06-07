@@ -19,8 +19,8 @@ pub async fn create_periodic_inspection(
         PeriodicInspection,
         r#"
         INSERT INTO PeriodicInspection (car_id, pi_name, pi_date, pi_nextdate)
-        VALUES ($1, $2, $3, $4)
-        RETURNING pi_id, car_id, pi_name, pi_date, pi_nextdate, created_at, updated_at
+        VALUES (?, ?, ?, ?)
+        RETURNING pi_id, car_id, pi_name, pi_date as "pi_date: _", pi_nextdate as "pi_nextdate: _", created_at, updated_at
         "#,
         new_periodic_inspection.car_id,
         new_periodic_inspection.pi_name,
@@ -61,7 +61,7 @@ pub async fn get_periodic_inspection(
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query_as!(PeriodicInspection, "SELECT * FROM PeriodicInspection WHERE pi_id = $1", id)
+    match query_as!(PeriodicInspection, "SELECT * FROM PeriodicInspection WHERE pi_id = ?", id)
         .fetch_one(&db_pool)
         .await
     {
@@ -84,9 +84,9 @@ pub async fn update_periodic_inspection(
         PeriodicInspection,
         r#"
         UPDATE PeriodicInspection
-        SET car_id = $1, pi_name = $2, pi_date = $3, pi_nextdate = $4, updated_at = CURRENT_TIMESTAMP
-        WHERE pi_id = $5
-        RETURNING pi_id, car_id, pi_name, pi_date, pi_nextdate, created_at, updated_at
+        SET car_id = ?, pi_name = ?, pi_date = ?, pi_nextdate = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE pi_id = ?
+        RETURNING pi_id, car_id, pi_name, pi_date as "pi_date: _", pi_nextdate as "pi_nextdate: _", created_at, updated_at
         "#,
         updated_periodic_inspection.car_id,
         updated_periodic_inspection.pi_name,
@@ -111,7 +111,7 @@ pub async fn delete_periodic_inspection(
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query!("DELETE FROM PeriodicInspection WHERE pi_id = $1", id)
+    match query!("DELETE FROM PeriodicInspection WHERE pi_id = ?", id)
         .execute(&db_pool)
         .await
     {

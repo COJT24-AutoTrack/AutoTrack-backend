@@ -19,8 +19,8 @@ pub async fn create_maintenance(
         Maintenance,
         r#"
         INSERT INTO Maintenances (car_id, maint_type, maint_date, maint_description)
-        VALUES ($1, $2, $3, $4)
-        RETURNING maint_id, car_id, maint_type, maint_date, maint_description, created_at, updated_at
+        VALUES (?, ?, ?, ?)
+        RETURNING maint_id, car_id, maint_type, maint_date as "maint_date: _", maint_description, created_at, updated_at
         "#,
         new_maintenance.car_id,
         new_maintenance.maint_type,
@@ -61,7 +61,7 @@ pub async fn get_maintenance(
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query_as!(Maintenance, "SELECT * FROM Maintenances WHERE maint_id = $1", id)
+    match query_as!(Maintenance, "SELECT * FROM Maintenances WHERE maint_id = ?", id)
         .fetch_one(&db_pool)
         .await
     {
@@ -84,9 +84,9 @@ pub async fn update_maintenance(
         Maintenance,
         r#"
         UPDATE Maintenances
-        SET car_id = $1, maint_type = $2, maint_date = $3, maint_description = $4, updated_at = CURRENT_TIMESTAMP
-        WHERE maint_id = $5
-        RETURNING maint_id, car_id, maint_type, maint_date, maint_description, created_at, updated_at
+        SET car_id = ?, maint_type = ?, maint_date = ?, maint_description = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE maint_id = ?
+        RETURNING maint_id, car_id, maint_type, maint_date as "maint_date: _", maint_description, created_at, updated_at
         "#,
         updated_maintenance.car_id,
         updated_maintenance.maint_type,
@@ -111,7 +111,7 @@ pub async fn delete_maintenance(
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query!("DELETE FROM Maintenances WHERE maint_id = $1", id)
+    match query!("DELETE FROM Maintenances WHERE maint_id = ?", id)
         .execute(&db_pool)
         .await
     {

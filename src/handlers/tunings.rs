@@ -19,8 +19,8 @@ pub async fn create_tuning(
         Tuning,
         r#"
         INSERT INTO Tunings (car_id, tuning_name, tuning_date, tuning_description)
-        VALUES ($1, $2, $3, $4)
-        RETURNING tuning_id, car_id, tuning_name, tuning_date, tuning_description, created_at, updated_at
+        VALUES (?, ?, ?, ?)
+        RETURNING tuning_id, car_id, tuning_name, tuning_date as "tuning_date: _", tuning_description, created_at, updated_at
         "#,
         new_tuning.car_id,
         new_tuning.tuning_name,
@@ -61,7 +61,7 @@ pub async fn get_tuning(
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query_as!(Tuning, "SELECT * FROM Tunings WHERE tuning_id = $1", id)
+    match query_as!(Tuning, "SELECT * FROM Tunings WHERE tuning_id = ?", id)
         .fetch_one(&db_pool)
         .await
     {
@@ -84,9 +84,9 @@ pub async fn update_tuning(
         Tuning,
         r#"
         UPDATE Tunings
-        SET car_id = $1, tuning_name = $2, tuning_date = $3, tuning_description = $4, updated_at = CURRENT_TIMESTAMP
-        WHERE tuning_id = $5
-        RETURNING tuning_id, car_id, tuning_name, tuning_date, tuning_description, created_at, updated_at
+        SET car_id = ?, tuning_name = ?, tuning_date = ?, tuning_description = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE tuning_id = ?
+        RETURNING tuning_id, car_id, tuning_name, tuning_date as "tuning_date: _", tuning_description, created_at, updated_at
         "#,
         updated_tuning.car_id,
         updated_tuning.tuning_name,
@@ -111,7 +111,7 @@ pub async fn delete_tuning(
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query!("DELETE FROM Tunings WHERE tuning_id = $1", id)
+    match query!("DELETE FROM Tunings WHERE tuning_id = ?", id)
         .execute(&db_pool)
         .await
     {
