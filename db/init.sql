@@ -1,3 +1,10 @@
+CREATE DATABASE IF NOT EXISTS `auto_track-db`;
+CREATE USER IF NOT EXISTS 'user'@'%' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON `auto_track-db`.* TO 'user'@'%';
+FLUSH PRIVILEGES;
+
+USE `auto_track-db`;
+
 CREATE TABLE Users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     user_email VARCHAR(255) NOT NULL UNIQUE,
