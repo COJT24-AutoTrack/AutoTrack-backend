@@ -4,6 +4,8 @@ services:
   backend:
     build:
       context: .
+      args:
+        DATABASE_URL: mysql://user:password@db:3306/auto_track-db
     depends_on:
       - db
     ports:
@@ -24,7 +26,7 @@ services:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
-      - ./db:/docker-entrypoint-initdb.d
+      - ./db:/docker-entrypoint-initdb.ddoc
     networks:
       - auto_track-network
 
