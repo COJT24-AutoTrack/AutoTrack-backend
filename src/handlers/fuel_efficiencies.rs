@@ -16,10 +16,7 @@ pub async fn create_fuel_efficiency(
     let db_pool = state.lock().await.db_pool.clone();
 
     match query!(
-        r#"
-        INSERT INTO FuelEfficiencies (car_id, fe_date, fe_amount, fe_unitprice, fe_mileage, created_at)
-        VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-        "#,
+        "INSERT INTO FuelEfficiencies (car_id, fe_date, fe_amount, fe_unitprice, fe_mileage, created_at) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)",
         new_fuel_efficiency.car_id,
         new_fuel_efficiency.fe_date,
         new_fuel_efficiency.fe_amount,
@@ -32,11 +29,7 @@ pub async fn create_fuel_efficiency(
         Ok(result) => {
             match query_as!(
                 FuelEfficiency,
-                r#"
-                SELECT fe_id, car_id, fe_date as "fe_date: _", fe_amount, fe_unitprice, fe_mileage, created_at, updated_at
-                FROM FuelEfficiencies
-                WHERE fe_id = ?
-                "#,
+                "SELECT fe_id, car_id, fe_date, fe_amount, fe_unitprice, fe_mileage, created_at, updated_at FROM FuelEfficiencies WHERE fe_id = ?",
                 result.last_insert_id()
             )
             .fetch_one(&db_pool)
@@ -100,11 +93,7 @@ pub async fn update_fuel_efficiency(
     let db_pool = state.lock().await.db_pool.clone();
 
     match query!(
-        r#"
-        UPDATE FuelEfficiencies
-        SET car_id = ?, fe_date = ?, fe_amount = ?, fe_unitprice = ?, fe_mileage = ?, updated_at = CURRENT_TIMESTAMP
-        WHERE fe_id = ?
-        "#,
+        "UPDATE FuelEfficiencies SET car_id = ?, fe_date = ?, fe_amount = ?, fe_unitprice = ?, fe_mileage = ?, updated_at = CURRENT_TIMESTAMP WHERE fe_id = ?",
         updated_fuel_efficiency.car_id,
         updated_fuel_efficiency.fe_date,
         updated_fuel_efficiency.fe_amount,
@@ -118,11 +107,7 @@ pub async fn update_fuel_efficiency(
         Ok(_) => {
             match query_as!(
                 FuelEfficiency,
-                r#"
-                SELECT fe_id, car_id, fe_date as "fe_date: _", fe_amount, fe_unitprice, fe_mileage, created_at, updated_at
-                FROM FuelEfficiencies
-                WHERE fe_id = ?
-                "#,
+                "SELECT fe_id, car_id, fe_date, fe_amount, fe_unitprice, fe_mileage, created_at, updated_at FROM FuelEfficiencies WHERE fe_id = ?",
                 id
             )
             .fetch_one(&db_pool)

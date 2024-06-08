@@ -16,10 +16,7 @@ pub async fn create_periodic_inspection(
     let db_pool = state.lock().await.db_pool.clone();
 
     match query!(
-        r#"
-        INSERT INTO PeriodicInspection (car_id, pi_name, pi_date, pi_nextdate, created_at)
-        VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
-        "#,
+        "INSERT INTO PeriodicInspection (car_id, pi_name, pi_date, pi_nextdate, created_at) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)",
         new_periodic_inspection.car_id,
         new_periodic_inspection.pi_name,
         new_periodic_inspection.pi_date,
@@ -31,11 +28,7 @@ pub async fn create_periodic_inspection(
         Ok(result) => {
             match query_as!(
                 PeriodicInspection,
-                r#"
-                SELECT pi_id, car_id, pi_name, pi_date as "pi_date: _", pi_nextdate as "pi_nextdate: _", created_at, updated_at
-                FROM PeriodicInspection
-                WHERE pi_id = ?
-                "#,
+                "SELECT pi_id, car_id, pi_name, pi_date, pi_nextdate, created_at, updated_at FROM PeriodicInspection WHERE pi_id = ?",
                 result.last_insert_id()
             )
             .fetch_one(&db_pool)
@@ -99,11 +92,7 @@ pub async fn update_periodic_inspection(
     let db_pool = state.lock().await.db_pool.clone();
 
     match query!(
-        r#"
-        UPDATE PeriodicInspection
-        SET car_id = ?, pi_name = ?, pi_date = ?, pi_nextdate = ?, updated_at = CURRENT_TIMESTAMP
-        WHERE pi_id = ?
-        "#,
+        "UPDATE PeriodicInspection SET car_id = ?, pi_name = ?, pi_date = ?, pi_nextdate = ?, updated_at = CURRENT_TIMESTAMP WHERE pi_id = ?",
         updated_periodic_inspection.car_id,
         updated_periodic_inspection.pi_name,
         updated_periodic_inspection.pi_date,
@@ -116,11 +105,7 @@ pub async fn update_periodic_inspection(
         Ok(_) => {
             match query_as!(
                 PeriodicInspection,
-                r#"
-                SELECT pi_id, car_id, pi_name, pi_date as "pi_date: _", pi_nextdate as "pi_nextdate: _", created_at, updated_at
-                FROM PeriodicInspection
-                WHERE pi_id = ?
-                "#,
+                "SELECT pi_id, car_id, pi_name, pi_date, pi_nextdate, created_at, updated_at FROM PeriodicInspection WHERE pi_id = ?",
                 id
             )
             .fetch_one(&db_pool)

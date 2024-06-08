@@ -16,10 +16,7 @@ pub async fn create_accident(
     let db_pool = state.lock().await.db_pool.clone();
 
     match query!(
-        r#"
-        INSERT INTO Accidents (car_id, accident_date, accident_description, created_at)
-        VALUES (?, ?, ?, CURRENT_TIMESTAMP)
-        "#,
+        "INSERT INTO Accidents (car_id, accident_date, accident_description, created_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP)",
         new_accident.car_id,
         new_accident.accident_date,
         new_accident.accident_description
@@ -30,11 +27,7 @@ pub async fn create_accident(
         Ok(result) => {
             match query_as!(
                 Accident,
-                r#"
-                SELECT accident_id, car_id, accident_date as "accident_date: _", accident_description, created_at, updated_at
-                FROM Accidents
-                WHERE accident_id = ?
-                "#,
+                "SELECT accident_id, car_id, accident_date, accident_description, created_at, updated_at FROM Accidents WHERE accident_id = ?",
                 result.last_insert_id()
             )
             .fetch_one(&db_pool)
@@ -98,11 +91,7 @@ pub async fn update_accident(
     let db_pool = state.lock().await.db_pool.clone();
 
     match query!(
-        r#"
-        UPDATE Accidents
-        SET car_id = ?, accident_date = ?, accident_description = ?, updated_at = CURRENT_TIMESTAMP
-        WHERE accident_id = ?
-        "#,
+        "UPDATE Accidents SET car_id = ?, accident_date = ?, accident_description = ?, updated_at = CURRENT_TIMESTAMP WHERE accident_id = ?",
         updated_accident.car_id,
         updated_accident.accident_date,
         updated_accident.accident_description,
@@ -114,11 +103,7 @@ pub async fn update_accident(
         Ok(_) => {
             match query_as!(
                 Accident,
-                r#"
-                SELECT accident_id, car_id, accident_date as "accident_date: _", accident_description, created_at, updated_at
-                FROM Accidents
-                WHERE accident_id = ?
-                "#,
+                "SELECT accident_id, car_id, accident_date, accident_description, created_at, updated_at FROM Accidents WHERE accident_id = ?",
                 id
             )
             .fetch_one(&db_pool)

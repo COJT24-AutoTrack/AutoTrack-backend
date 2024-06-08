@@ -16,10 +16,7 @@ pub async fn create_user(
     let db_pool = state.lock().await.db_pool.clone();
 
     match query!(
-        r#"
-        INSERT INTO Users (user_email, user_name, user_password)
-        VALUES (?, ?, ?)
-        "#,
+        "INSERT INTO Users (user_email, user_name, user_password) VALUES (?, ?, ?)",
         new_user.user_email,
         new_user.user_name,
         new_user.user_password
@@ -92,11 +89,7 @@ pub async fn update_user(
     let db_pool = state.lock().await.db_pool.clone();
 
     match query!(
-        r#"
-        UPDATE Users
-        SET user_email = ?, user_name = ?, user_password = ?, updated_at = CURRENT_TIMESTAMP
-        WHERE user_id = ?
-        "#,
+        "UPDATE Users SET user_email = ?, user_name = ?, user_password = ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?",
         updated_user.user_email,
         updated_user.user_name,
         updated_user.user_password,

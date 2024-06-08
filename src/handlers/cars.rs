@@ -27,10 +27,7 @@ pub async fn create_car(
 
     // 車を作成
     let car_result = query!(
-        r#"
-        INSERT INTO Cars (car_name, carmodelnum, car_color, car_mileage, car_isflooding, car_issmoked)
-        VALUES (?, ?, ?, ?, ?, ?)
-        "#,
+        "INSERT INTO Cars (car_name, carmodelnum, car_color, car_mileage, car_isflooding, car_issmoked) VALUES (?, ?, ?, ?, ?, ?)",
         car.car_name,
         car.carmodelnum,
         car.car_color,
@@ -45,11 +42,8 @@ pub async fn create_car(
         Ok(res) => {
             let car_id = res.last_insert_id();
             let car = query_as!(
-                Car, 
-                "SELECT car_id, car_name, carmodelnum, car_color, car_mileage, 
-                car_isflooding as `car_isflooding: bool`, 
-                car_issmoked as `car_issmoked: bool`, created_at, updated_at 
-                FROM Cars WHERE car_id = ?", 
+                Car,
+                "SELECT car_id, car_name, carmodelnum, car_color, car_mileage, car_isflooding as `car_isflooding: bool`, car_issmoked as `car_issmoked: bool`, created_at, updated_at FROM Cars WHERE car_id = ?",
                 car_id
             )
             .fetch_one(&mut *tx)
@@ -58,10 +52,7 @@ pub async fn create_car(
 
             // user_carテーブルにエントリを追加
             let user_car_result = query!(
-                r#"
-                INSERT INTO user_car (user_id, car_id)
-                VALUES (?, ?)
-                "#,
+                "INSERT INTO user_car (user_id, car_id) VALUES (?, ?)",
                 user_id,
                 car_id
             )
@@ -94,11 +85,8 @@ pub async fn get_cars(
     let db_pool = state.lock().await.db_pool.clone();
 
     match query_as!(
-        Car, 
-        "SELECT car_id, car_name, carmodelnum, car_color, car_mileage, 
-        car_isflooding as `car_isflooding: bool`, 
-        car_issmoked as `car_issmoked: bool`, created_at, updated_at 
-        FROM Cars"
+        Car,
+        "SELECT car_id, car_name, carmodelnum, car_color, car_mileage, car_isflooding as `car_isflooding: bool`, car_issmoked as `car_issmoked: bool`, created_at, updated_at FROM Cars"
     )
     .fetch_all(&db_pool)
     .await
@@ -118,11 +106,8 @@ pub async fn get_car(
     let db_pool = state.lock().await.db_pool.clone();
 
     match query_as!(
-        Car, 
-        "SELECT car_id, car_name, carmodelnum, car_color, car_mileage, 
-        car_isflooding as `car_isflooding: bool`, 
-        car_issmoked as `car_issmoked: bool`, created_at, updated_at 
-        FROM Cars WHERE car_id = ?", 
+        Car,
+        "SELECT car_id, car_name, carmodelnum, car_color, car_mileage, car_isflooding as `car_isflooding: bool`, car_issmoked as `car_issmoked: bool`, created_at, updated_at FROM Cars WHERE car_id = ?",
         id
     )
     .fetch_one(&db_pool)
@@ -144,11 +129,7 @@ pub async fn update_car(
     let db_pool = state.lock().await.db_pool.clone();
 
     let result = query!(
-        r#"
-        UPDATE Cars
-        SET car_name = ?, carmodelnum = ?, car_color = ?, car_mileage = ?, car_isflooding = ?, car_issmoked = ?, updated_at = CURRENT_TIMESTAMP
-        WHERE car_id = ?
-        "#,
+        "UPDATE Cars SET car_name = ?, carmodelnum = ?, car_color = ?, car_mileage = ?, car_isflooding = ?, car_issmoked = ?, updated_at = CURRENT_TIMESTAMP WHERE car_id = ?",
         updated_car.car_name,
         updated_car.carmodelnum,
         updated_car.car_color,
@@ -163,11 +144,8 @@ pub async fn update_car(
     match result {
         Ok(_) => {
             match query_as!(
-                Car, 
-                "SELECT car_id, car_name, carmodelnum, car_color, car_mileage, 
-                car_isflooding as `car_isflooding: bool`, 
-                car_issmoked as `car_issmoked: bool`, created_at, updated_at 
-                FROM Cars WHERE car_id = ?", 
+                Car,
+                "SELECT car_id, car_name, carmodelnum, car_color, car_mileage, car_isflooding as `car_isflooding: bool`, car_issmoked as `car_issmoked: bool`, created_at, updated_at FROM Cars WHERE car_id = ?",
                 id
             )
             .fetch_one(&db_pool)
@@ -203,9 +181,7 @@ pub async fn delete_car(
 
     // user_carテーブルからエントリを削除
     let user_car_result = query!(
-        r#"
-        DELETE FROM user_car WHERE car_id = ?
-        "#,
+        "DELETE FROM user_car WHERE car_id = ?",
         id
     )
     .execute(&mut *tx)
