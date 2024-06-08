@@ -15,28 +15,46 @@ pub async fn create_maintenance(
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query_as!(
-        Maintenance,
+    match query!(
         r#"
-        INSERT INTO Maintenances (car_id, maint_type, maint_date, maint_description)
-        VALUES (?, ?, ?, ?)
-        RETURNING maint_id, car_id, maint_type, maint_date as "maint_date: _", maint_description, created_at, updated_at
+        INSERT INTO Maintenances (car_id, maint_type, maint_date, maint_description, created_at)
+        VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
         "#,
         new_maintenance.car_id,
         new_maintenance.maint_type,
         new_maintenance.maint_date,
         new_maintenance.maint_description
     )
-    .fetch_one(&db_pool)
+    .execute(&db_pool)
     .await
     {
-        Ok(maintenance) => (StatusCode::CREATED, Json(maintenance)).into_response(),
+        Ok(result) => {
+            match query_as!(
+                Maintenance,
+                r#"
+                SELECT maint_id, car_id, maint_type, maint_date as "maint_date: _", maint_description, created_at, updated_at
+                FROM Maintenances
+                WHERE maint_id = ?
+                "#,
+                result.last_insert_id()
+            )
+            .fetch_one(&db_pool)
+            .await
+            {
+                Ok(maintenance) => (StatusCode::CREATED, Json(maintenance)).into_response(),
+                Err(e) => {
+                    eprintln!("Failed to fetch maintenance after creation: {:?}", e);
+                    StatusCode::INTERNAL_SERVER_ERROR.into_response()
+                }
+            }
+        },
         Err(e) => {
             eprintln!("Failed to create maintenance: {:?}", e);
             StatusCode::INTERNAL_SERVER_ERROR.into_response()
         }
     }
 }
+
 
 pub async fn get_maintenances(
     Extension(state): Extension<Arc<Mutex<AppState>>>
@@ -80,13 +98,11 @@ pub async fn update_maintenance(
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query_as!(
-        Maintenance,
+    match query!(
         r#"
         UPDATE Maintenances
         SET car_id = ?, maint_type = ?, maint_date = ?, maint_description = ?, updated_at = CURRENT_TIMESTAMP
         WHERE maint_id = ?
-        RETURNING maint_id, car_id, maint_type, maint_date as "maint_date: _", maint_description, created_at, updated_at
         "#,
         updated_maintenance.car_id,
         updated_maintenance.maint_type,
@@ -94,16 +110,36 @@ pub async fn update_maintenance(
         updated_maintenance.maint_description,
         id
     )
-    .fetch_one(&db_pool)
+    .execute(&db_pool)
     .await
     {
-        Ok(maintenance) => (StatusCode::OK, Json(maintenance)).into_response(),
+        Ok(_) => {
+            match query_as!(
+                Maintenance,
+                r#"
+                SELECT maint_id, car_id, maint_type, maint_date as "maint_date: _", maint_description, created_at, updated_at
+                FROM Maintenances
+                WHERE maint_id = ?
+                "#,
+                id
+            )
+            .fetch_one(&db_pool)
+            .await
+            {
+                Ok(maintenance) => (StatusCode::OK, Json(maintenance)).into_response(),
+                Err(e) => {
+                    eprintln!("Failed to fetch maintenance after update: {:?}", e);
+                    StatusCode::INTERNAL_SERVER_ERROR.into_response()
+                }
+            }
+        },
         Err(e) => {
             eprintln!("Failed to update maintenance: {:?}", e);
             StatusCode::INTERNAL_SERVER_ERROR.into_response()
         }
     }
 }
+
 
 pub async fn delete_maintenance(
     Extension(state): Extension<Arc<Mutex<AppState>>>,

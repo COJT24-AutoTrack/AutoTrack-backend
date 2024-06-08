@@ -15,27 +15,45 @@ pub async fn create_accident(
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query_as!(
-        Accident,
+    match query!(
         r#"
-        INSERT INTO Accidents (car_id, accident_date, accident_description)
-        VALUES (?, ?, ?)
-        RETURNING accident_id, car_id, accident_date as "accident_date: _", accident_description, created_at, updated_at
+        INSERT INTO Accidents (car_id, accident_date, accident_description, created_at)
+        VALUES (?, ?, ?, CURRENT_TIMESTAMP)
         "#,
         new_accident.car_id,
         new_accident.accident_date,
         new_accident.accident_description
     )
-    .fetch_one(&db_pool)
+    .execute(&db_pool)
     .await
     {
-        Ok(accident) => (StatusCode::CREATED, Json(accident)).into_response(),
+        Ok(result) => {
+            match query_as!(
+                Accident,
+                r#"
+                SELECT accident_id, car_id, accident_date as "accident_date: _", accident_description, created_at, updated_at
+                FROM Accidents
+                WHERE accident_id = ?
+                "#,
+                result.last_insert_id()
+            )
+            .fetch_one(&db_pool)
+            .await
+            {
+                Ok(accident) => (StatusCode::CREATED, Json(accident)).into_response(),
+                Err(e) => {
+                    eprintln!("Failed to fetch accident after creation: {:?}", e);
+                    StatusCode::INTERNAL_SERVER_ERROR.into_response()
+                }
+            }
+        },
         Err(e) => {
             eprintln!("Failed to create accident: {:?}", e);
             StatusCode::INTERNAL_SERVER_ERROR.into_response()
         }
     }
 }
+
 
 pub async fn get_accidents(
     Extension(state): Extension<Arc<Mutex<AppState>>>
@@ -79,29 +97,47 @@ pub async fn update_accident(
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query_as!(
-        Accident,
+    match query!(
         r#"
         UPDATE Accidents
         SET car_id = ?, accident_date = ?, accident_description = ?, updated_at = CURRENT_TIMESTAMP
         WHERE accident_id = ?
-        RETURNING accident_id, car_id, accident_date as "accident_date: _", accident_description, created_at, updated_at
         "#,
         updated_accident.car_id,
         updated_accident.accident_date,
         updated_accident.accident_description,
         id
     )
-    .fetch_one(&db_pool)
+    .execute(&db_pool)
     .await
     {
-        Ok(accident) => (StatusCode::OK, Json(accident)).into_response(),
+        Ok(_) => {
+            match query_as!(
+                Accident,
+                r#"
+                SELECT accident_id, car_id, accident_date as "accident_date: _", accident_description, created_at, updated_at
+                FROM Accidents
+                WHERE accident_id = ?
+                "#,
+                id
+            )
+            .fetch_one(&db_pool)
+            .await
+            {
+                Ok(accident) => (StatusCode::OK, Json(accident)).into_response(),
+                Err(e) => {
+                    eprintln!("Failed to fetch accident after update: {:?}", e);
+                    StatusCode::INTERNAL_SERVER_ERROR.into_response()
+                }
+            }
+        },
         Err(e) => {
             eprintln!("Failed to update accident: {:?}", e);
             StatusCode::INTERNAL_SERVER_ERROR.into_response()
         }
     }
 }
+
 
 pub async fn delete_accident(
     Extension(state): Extension<Arc<Mutex<AppState>>>,

@@ -15,29 +15,47 @@ pub async fn create_fuel_efficiency(
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query_as!(
-        FuelEfficiency,
+    match query!(
         r#"
-        INSERT INTO FuelEfficiencies (car_id, fe_date, fe_amount, fe_unitprice, fe_milage)
-        VALUES (?, ?, ?, ?, ?)
-        RETURNING fe_id, car_id, fe_date as "fe_date: _", fe_amount, fe_unitprice, fe_milage, created_at, updated_at
+        INSERT INTO FuelEfficiencies (car_id, fe_date, fe_amount, fe_unitprice, fe_mileage, created_at)
+        VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
         "#,
         new_fuel_efficiency.car_id,
         new_fuel_efficiency.fe_date,
         new_fuel_efficiency.fe_amount,
         new_fuel_efficiency.fe_unitprice,
-        new_fuel_efficiency.fe_milage
+        new_fuel_efficiency.fe_mileage
     )
-    .fetch_one(&db_pool)
+    .execute(&db_pool)
     .await
     {
-        Ok(fuel_efficiency) => (StatusCode::CREATED, Json(fuel_efficiency)).into_response(),
+        Ok(result) => {
+            match query_as!(
+                FuelEfficiency,
+                r#"
+                SELECT fe_id, car_id, fe_date as "fe_date: _", fe_amount, fe_unitprice, fe_mileage, created_at, updated_at
+                FROM FuelEfficiencies
+                WHERE fe_id = ?
+                "#,
+                result.last_insert_id()
+            )
+            .fetch_one(&db_pool)
+            .await
+            {
+                Ok(fuel_efficiency) => (StatusCode::CREATED, Json(fuel_efficiency)).into_response(),
+                Err(e) => {
+                    eprintln!("Failed to fetch fuel efficiency after creation: {:?}", e);
+                    StatusCode::INTERNAL_SERVER_ERROR.into_response()
+                }
+            }
+        },
         Err(e) => {
             eprintln!("Failed to create fuel efficiency: {:?}", e);
             StatusCode::INTERNAL_SERVER_ERROR.into_response()
         }
     }
 }
+
 
 pub async fn get_fuel_efficiencies(
     Extension(state): Extension<Arc<Mutex<AppState>>>
@@ -81,31 +99,49 @@ pub async fn update_fuel_efficiency(
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query_as!(
-        FuelEfficiency,
+    match query!(
         r#"
         UPDATE FuelEfficiencies
-        SET car_id = ?, fe_date = ?, fe_amount = ?, fe_unitprice = ?, fe_milage = ?, updated_at = CURRENT_TIMESTAMP
+        SET car_id = ?, fe_date = ?, fe_amount = ?, fe_unitprice = ?, fe_mileage = ?, updated_at = CURRENT_TIMESTAMP
         WHERE fe_id = ?
-        RETURNING fe_id, car_id, fe_date as "fe_date: _", fe_amount, fe_unitprice, fe_milage, created_at, updated_at
         "#,
         updated_fuel_efficiency.car_id,
         updated_fuel_efficiency.fe_date,
         updated_fuel_efficiency.fe_amount,
         updated_fuel_efficiency.fe_unitprice,
-        updated_fuel_efficiency.fe_milage,
+        updated_fuel_efficiency.fe_mileage,
         id
     )
-    .fetch_one(&db_pool)
+    .execute(&db_pool)
     .await
     {
-        Ok(fuel_efficiency) => (StatusCode::OK, Json(fuel_efficiency)).into_response(),
+        Ok(_) => {
+            match query_as!(
+                FuelEfficiency,
+                r#"
+                SELECT fe_id, car_id, fe_date as "fe_date: _", fe_amount, fe_unitprice, fe_mileage, created_at, updated_at
+                FROM FuelEfficiencies
+                WHERE fe_id = ?
+                "#,
+                id
+            )
+            .fetch_one(&db_pool)
+            .await
+            {
+                Ok(fuel_efficiency) => (StatusCode::OK, Json(fuel_efficiency)).into_response(),
+                Err(e) => {
+                    eprintln!("Failed to fetch fuel efficiency after update: {:?}", e);
+                    StatusCode::INTERNAL_SERVER_ERROR.into_response()
+                }
+            }
+        },
         Err(e) => {
             eprintln!("Failed to update fuel efficiency: {:?}", e);
             StatusCode::INTERNAL_SERVER_ERROR.into_response()
         }
     }
 }
+
 
 pub async fn delete_fuel_efficiency(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
