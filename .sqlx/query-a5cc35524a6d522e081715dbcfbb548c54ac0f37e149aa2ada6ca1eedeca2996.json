@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "UPDATE PeriodicInspection SET car_id = ?, pi_name = ?, pi_date = ?, pi_nextdate = ? WHERE pi_id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 5
+    },
+    "nullable": []
+  },
+  "hash": "a5cc35524a6d522e081715dbcfbb548c54ac0f37e149aa2ada6ca1eedeca2996"
+}

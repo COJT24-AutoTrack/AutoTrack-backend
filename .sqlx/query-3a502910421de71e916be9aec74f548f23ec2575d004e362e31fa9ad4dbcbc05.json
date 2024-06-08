@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "INSERT INTO FuelEfficiencies (car_id, fe_date, fe_amount, fe_unitprice, fe_mileage) VALUES (?, ?, ?, ?, ?)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 5
+    },
+    "nullable": []
+  },
+  "hash": "3a502910421de71e916be9aec74f548f23ec2575d004e362e31fa9ad4dbcbc05"
+}

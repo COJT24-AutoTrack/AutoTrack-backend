@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "UPDATE FuelEfficiencies SET car_id = ?, fe_date = ?, fe_amount = ?, fe_unitprice = ?, fe_mileage = ? WHERE fe_id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 6
+    },
+    "nullable": []
+  },
+  "hash": "71556b077689e3ae1bed4cae2ffef81567260928fab8c5c5f7250d501f19bc3b"
+}

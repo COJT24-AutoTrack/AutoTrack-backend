@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "UPDATE Maintenances SET car_id = ?, maint_type = ?, maint_date = ?, maint_description = ? WHERE maint_id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 5
+    },
+    "nullable": []
+  },
+  "hash": "a1242ce70c032aebb8c9b5071db8d40e92e29dd3f8f71cdeda42394cb06b7b8a"
+}

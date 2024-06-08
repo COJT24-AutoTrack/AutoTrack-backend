@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "UPDATE Accidents SET car_id = ?, accident_date = ?, accident_description = ? WHERE accident_id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 4
+    },
+    "nullable": []
+  },
+  "hash": "9918592f0b5a96a355f213ffdf0b8152b838fda7a3613965f11da22f6d2f7a52"
+}

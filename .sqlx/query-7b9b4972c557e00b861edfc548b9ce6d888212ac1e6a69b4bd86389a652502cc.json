@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "INSERT INTO Tunings (car_id, tuning_name, tuning_date, tuning_description) VALUES (?, ?, ?, ?)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 4
+    },
+    "nullable": []
+  },
+  "hash": "7b9b4972c557e00b861edfc548b9ce6d888212ac1e6a69b4bd86389a652502cc"
+}
