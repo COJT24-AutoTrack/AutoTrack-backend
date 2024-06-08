@@ -1,6 +1,6 @@
 {
   "db_name": "MySQL",
-  "query": "SELECT car_id, car_name, carmodelnum, car_color, car_mileage, \n                car_isflooding as `car_isflooding: bool`, \n                car_issmoked as `car_issmoked: bool`, created_at, updated_at \n                FROM Cars WHERE car_id = ?",
+  "query": "SELECT car_id, car_name, carmodelnum, car_color, car_mileage, car_isflooding as `car_isflooding: bool`, car_issmoked as `car_issmoked: bool`, created_at, updated_at FROM Cars WHERE car_id = ?",
   "describe": {
     "columns": [
       {
@@ -109,5 +109,5 @@
       false
     ]
   },
-  "hash": "98bb2b86a45ee00e7b12c1d7df450a7e1f803bc1e42771798f9541a883cf3df5"
+  "hash": "e6738d26d48a77801ae6fbd450c99d2c17e536aa128ce5debf298ba7d440fafa"
 }

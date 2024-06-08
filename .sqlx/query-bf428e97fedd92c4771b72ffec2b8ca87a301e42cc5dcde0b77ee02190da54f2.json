@@ -1,11 +1,11 @@
 {
   "db_name": "MySQL",
-  "query": "\n                SELECT pi_id, car_id, pi_name, pi_date as \"pi_date: _\", pi_nextdate as \"pi_nextdate: _\", created_at, updated_at\n                FROM PeriodicInspection\n                WHERE pi_id = ?\n                ",
+  "query": "SELECT maint_id, car_id, maint_type, maint_date, maint_description, created_at, updated_at FROM Maintenances WHERE maint_id = ?",
   "describe": {
     "columns": [
       {
         "ordinal": 0,
-        "name": "pi_id",
+        "name": "maint_id",
         "type_info": {
           "type": "Long",
           "flags": "NOT_NULL | PRIMARY_KEY | AUTO_INCREMENT",
@@ -25,7 +25,7 @@
       },
       {
         "ordinal": 2,
-        "name": "pi_name",
+        "name": "maint_type",
         "type_info": {
           "type": "VarString",
           "flags": "NOT_NULL | NO_DEFAULT_VALUE",
@@ -35,7 +35,7 @@
       },
       {
         "ordinal": 3,
-        "name": "pi_date: _",
+        "name": "maint_date",
         "type_info": {
           "type": "Date",
           "flags": "NOT_NULL | BINARY | NO_DEFAULT_VALUE",
@@ -45,12 +45,12 @@
       },
       {
         "ordinal": 4,
-        "name": "pi_nextdate: _",
+        "name": "maint_description",
         "type_info": {
-          "type": "Date",
-          "flags": "NOT_NULL | BINARY | NO_DEFAULT_VALUE",
-          "char_set": 63,
-          "max_size": 10
+          "type": "Blob",
+          "flags": "NOT_NULL | BLOB | NO_DEFAULT_VALUE",
+          "char_set": 224,
+          "max_size": 262140
         }
       },
       {
@@ -87,5 +87,5 @@
       false
     ]
   },
-  "hash": "77dcc9e8ac977c0450e00cb2891c7f4f3507c6d437a6e71a5be3b30b88cbb1d0"
+  "hash": "bf428e97fedd92c4771b72ffec2b8ca87a301e42cc5dcde0b77ee02190da54f2"
 }

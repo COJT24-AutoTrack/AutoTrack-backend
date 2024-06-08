@@ -1,11 +1,11 @@
 {
   "db_name": "MySQL",
-  "query": "SELECT car_id, car_name, carmodelnum, car_color, car_mileage, \n        car_isflooding as `car_isflooding: bool`, \n        car_issmoked as `car_issmoked: bool`, created_at, updated_at \n        FROM Cars WHERE car_id = ?",
+  "query": "SELECT pi_id, car_id, pi_name, pi_date, pi_nextdate, created_at, updated_at FROM PeriodicInspection WHERE pi_id = ?",
   "describe": {
     "columns": [
       {
         "ordinal": 0,
-        "name": "car_id",
+        "name": "pi_id",
         "type_info": {
           "type": "Long",
           "flags": "NOT_NULL | PRIMARY_KEY | AUTO_INCREMENT",
@@ -15,17 +15,17 @@
       },
       {
         "ordinal": 1,
-        "name": "car_name",
+        "name": "car_id",
         "type_info": {
-          "type": "VarString",
-          "flags": "NOT_NULL | NO_DEFAULT_VALUE",
-          "char_set": 224,
-          "max_size": 1020
+          "type": "Long",
+          "flags": "NOT_NULL | MULTIPLE_KEY | NO_DEFAULT_VALUE",
+          "char_set": 63,
+          "max_size": 11
         }
       },
       {
         "ordinal": 2,
-        "name": "carmodelnum",
+        "name": "pi_name",
         "type_info": {
           "type": "VarString",
           "flags": "NOT_NULL | NO_DEFAULT_VALUE",
@@ -35,46 +35,26 @@
       },
       {
         "ordinal": 3,
-        "name": "car_color",
+        "name": "pi_date",
         "type_info": {
-          "type": "VarString",
-          "flags": "NOT_NULL | NO_DEFAULT_VALUE",
-          "char_set": 224,
-          "max_size": 1020
+          "type": "Date",
+          "flags": "NOT_NULL | BINARY | NO_DEFAULT_VALUE",
+          "char_set": 63,
+          "max_size": 10
         }
       },
       {
         "ordinal": 4,
-        "name": "car_mileage",
+        "name": "pi_nextdate",
         "type_info": {
-          "type": "Long",
-          "flags": "NOT_NULL | NO_DEFAULT_VALUE",
+          "type": "Date",
+          "flags": "NOT_NULL | BINARY | NO_DEFAULT_VALUE",
           "char_set": 63,
-          "max_size": 11
+          "max_size": 10
         }
       },
       {
         "ordinal": 5,
-        "name": "car_isflooding: bool",
-        "type_info": {
-          "type": "Tiny",
-          "flags": "NOT_NULL | NO_DEFAULT_VALUE",
-          "char_set": 63,
-          "max_size": 1
-        }
-      },
-      {
-        "ordinal": 6,
-        "name": "car_issmoked: bool",
-        "type_info": {
-          "type": "Tiny",
-          "flags": "NOT_NULL | NO_DEFAULT_VALUE",
-          "char_set": 63,
-          "max_size": 1
-        }
-      },
-      {
-        "ordinal": 7,
         "name": "created_at",
         "type_info": {
           "type": "Timestamp",
@@ -84,7 +64,7 @@
         }
       },
       {
-        "ordinal": 8,
+        "ordinal": 6,
         "name": "updated_at",
         "type_info": {
           "type": "Timestamp",
@@ -104,10 +84,8 @@
       false,
       false,
       false,
-      false,
-      false,
       false
     ]
   },
-  "hash": "3664fb310490e5a475fc4eb6c2a9a923ed7668dad947538f1645864235cfe9cc"
+  "hash": "0952999c69f1b55fb6d8a20dce8c870d282c05a6f9080d8890d4cd409d0e3696"
 }

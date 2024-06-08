@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "INSERT INTO PeriodicInspection (car_id, pi_name, pi_date, pi_nextdate, created_at) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 4
+    },
+    "nullable": []
+  },
+  "hash": "45f78a0401852ee29518b93685652858107ee1825006c9164b0167dbc2a7fe0f"
+}

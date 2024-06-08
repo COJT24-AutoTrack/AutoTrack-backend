@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "UPDATE Tunings SET car_id = ?, tuning_name = ?, tuning_date = ?, tuning_description = ?, updated_at = CURRENT_TIMESTAMP WHERE tuning_id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 5
+    },
+    "nullable": []
+  },
+  "hash": "445906cb4346e148ddd65b9f7f93bd873417bf417865ba5dacae3c39165368e8"
+}

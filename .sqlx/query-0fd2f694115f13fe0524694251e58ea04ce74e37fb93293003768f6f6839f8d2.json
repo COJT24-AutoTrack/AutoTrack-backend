@@ -1,11 +1,11 @@
 {
   "db_name": "MySQL",
-  "query": "\n                SELECT accident_id, car_id, accident_date as \"accident_date: _\", accident_description, created_at, updated_at\n                FROM Accidents\n                WHERE accident_id = ?\n                ",
+  "query": "SELECT fe_id, car_id, fe_date, fe_amount, fe_unitprice, fe_mileage, created_at, updated_at FROM FuelEfficiencies WHERE fe_id = ?",
   "describe": {
     "columns": [
       {
         "ordinal": 0,
-        "name": "accident_id",
+        "name": "fe_id",
         "type_info": {
           "type": "Long",
           "flags": "NOT_NULL | PRIMARY_KEY | AUTO_INCREMENT",
@@ -25,7 +25,7 @@
       },
       {
         "ordinal": 2,
-        "name": "accident_date: _",
+        "name": "fe_date",
         "type_info": {
           "type": "Date",
           "flags": "NOT_NULL | BINARY | NO_DEFAULT_VALUE",
@@ -35,16 +35,36 @@
       },
       {
         "ordinal": 3,
-        "name": "accident_description",
+        "name": "fe_amount",
         "type_info": {
-          "type": "Blob",
-          "flags": "NOT_NULL | BLOB | NO_DEFAULT_VALUE",
-          "char_set": 224,
-          "max_size": 262140
+          "type": "Float",
+          "flags": "NOT_NULL | NO_DEFAULT_VALUE",
+          "char_set": 63,
+          "max_size": 12
         }
       },
       {
         "ordinal": 4,
+        "name": "fe_unitprice",
+        "type_info": {
+          "type": "Float",
+          "flags": "NOT_NULL | NO_DEFAULT_VALUE",
+          "char_set": 63,
+          "max_size": 12
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "fe_mileage",
+        "type_info": {
+          "type": "Long",
+          "flags": "NOT_NULL | NO_DEFAULT_VALUE",
+          "char_set": 63,
+          "max_size": 11
+        }
+      },
+      {
+        "ordinal": 6,
         "name": "created_at",
         "type_info": {
           "type": "Timestamp",
@@ -54,7 +74,7 @@
         }
       },
       {
-        "ordinal": 5,
+        "ordinal": 7,
         "name": "updated_at",
         "type_info": {
           "type": "Timestamp",
@@ -73,8 +93,10 @@
       false,
       false,
       false,
+      false,
+      false,
       false
     ]
   },
-  "hash": "eb8e302fc6d1e0da6d1ee9f84402e4a41c5db1e1d678dcc81d1c4a5eb48c46fc"
+  "hash": "0fd2f694115f13fe0524694251e58ea04ce74e37fb93293003768f6f6839f8d2"
 }

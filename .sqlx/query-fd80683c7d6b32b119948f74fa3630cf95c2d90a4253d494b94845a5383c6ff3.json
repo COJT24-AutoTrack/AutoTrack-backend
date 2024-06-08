@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "INSERT INTO Tunings (car_id, tuning_name, tuning_date, tuning_description, created_at) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 4
+    },
+    "nullable": []
+  },
+  "hash": "fd80683c7d6b32b119948f74fa3630cf95c2d90a4253d494b94845a5383c6ff3"
+}

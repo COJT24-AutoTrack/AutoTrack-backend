@@ -1,11 +1,11 @@
 {
   "db_name": "MySQL",
-  "query": "\n                SELECT maint_id, car_id, maint_type, maint_date as \"maint_date: _\", maint_description, created_at, updated_at\n                FROM Maintenances\n                WHERE maint_id = ?\n                ",
+  "query": "SELECT accident_id, car_id, accident_date, accident_description, created_at, updated_at FROM Accidents WHERE accident_id = ?",
   "describe": {
     "columns": [
       {
         "ordinal": 0,
-        "name": "maint_id",
+        "name": "accident_id",
         "type_info": {
           "type": "Long",
           "flags": "NOT_NULL | PRIMARY_KEY | AUTO_INCREMENT",
@@ -25,17 +25,7 @@
       },
       {
         "ordinal": 2,
-        "name": "maint_type",
-        "type_info": {
-          "type": "VarString",
-          "flags": "NOT_NULL | NO_DEFAULT_VALUE",
-          "char_set": 224,
-          "max_size": 1020
-        }
-      },
-      {
-        "ordinal": 3,
-        "name": "maint_date: _",
+        "name": "accident_date",
         "type_info": {
           "type": "Date",
           "flags": "NOT_NULL | BINARY | NO_DEFAULT_VALUE",
@@ -44,8 +34,8 @@
         }
       },
       {
-        "ordinal": 4,
-        "name": "maint_description",
+        "ordinal": 3,
+        "name": "accident_description",
         "type_info": {
           "type": "Blob",
           "flags": "NOT_NULL | BLOB | NO_DEFAULT_VALUE",
@@ -54,7 +44,7 @@
         }
       },
       {
-        "ordinal": 5,
+        "ordinal": 4,
         "name": "created_at",
         "type_info": {
           "type": "Timestamp",
@@ -64,7 +54,7 @@
         }
       },
       {
-        "ordinal": 6,
+        "ordinal": 5,
         "name": "updated_at",
         "type_info": {
           "type": "Timestamp",
@@ -83,9 +73,8 @@
       false,
       false,
       false,
-      false,
       false
     ]
   },
-  "hash": "ec081c0aded701141dfe7aa190273384f78ffa909c29fcee2f68c28bad1ae9f0"
+  "hash": "50206e1588cc77a515d3bad0cac0a99dc6a94e14d072bd43c846c5522054987d"
 }

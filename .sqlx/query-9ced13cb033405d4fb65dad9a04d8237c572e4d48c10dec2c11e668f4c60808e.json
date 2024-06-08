@@ -1,6 +1,6 @@
 {
   "db_name": "MySQL",
-  "query": "\n                SELECT tuning_id, car_id, tuning_name, tuning_date as \"tuning_date: _\", tuning_description, created_at, updated_at\n                FROM Tunings\n                WHERE car_id = ?\n                ",
+  "query": "SELECT tuning_id, car_id, tuning_name, tuning_date, tuning_description, created_at, updated_at FROM Tunings WHERE car_id = ?",
   "describe": {
     "columns": [
       {
@@ -35,7 +35,7 @@
       },
       {
         "ordinal": 3,
-        "name": "tuning_date: _",
+        "name": "tuning_date",
         "type_info": {
           "type": "Date",
           "flags": "NOT_NULL | BINARY | NO_DEFAULT_VALUE",
@@ -87,5 +87,5 @@
       false
     ]
   },
-  "hash": "72ae8731968bfa7a2e3830584cbc4acd9dadc8b1e5aa71f6e3b5b81940559ad9"
+  "hash": "9ced13cb033405d4fb65dad9a04d8237c572e4d48c10dec2c11e668f4c60808e"
 }
