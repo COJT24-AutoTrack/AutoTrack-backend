@@ -8,14 +8,21 @@ use tokio::sync::Mutex;
 use std::sync::Arc;
 use crate::db::AppState;
 use crate::models::car::Car;
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct CreateCarRequest {
+    car: Car,
+    user_id: i32,
+}
 
 pub async fn create_car(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Json(new_car): Json<(Car, i32)>  // Carとuser_idのタプルを受け取る
+    Json(req): Json<CreateCarRequest>  // 修正点: 新しい構造体を受け取る
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    let (car, user_id) = new_car;
+    let CreateCarRequest { car, user_id } = req;
 
     let mut tx: Transaction<'_, MySql> = match db_pool.begin().await {
         Ok(tx) => tx,
