@@ -3,7 +3,7 @@ use time::{OffsetDateTime, Date};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Maintenance {
-    pub maint_id: i32,
+    pub maint_id: Option<i32>,
     pub car_id: i32,
     pub maint_type: String,
     pub maint_date: Date,

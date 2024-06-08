@@ -3,7 +3,7 @@ use time::{OffsetDateTime, Date};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct FuelEfficiency {
-    pub fe_id: i32,
+    pub fe_id: Option<i32>,
     pub car_id: i32,
     pub fe_date: Date,
     pub fe_amount: f32,
