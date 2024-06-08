@@ -24,7 +24,7 @@ async fn main() {
 
     let app = routes::create_routes(state);
 
-    let addr = std::net::SocketAddr::from(([0, 0, 0, 0], 8080));
+    let addr = std::net::SocketAddr::from(([0, 0, 0, 0], 8369));
     let listener = tokio::net::TcpListener::bind(&addr)
         .await
         .unwrap();
