@@ -1,6 +1,6 @@
 {
   "db_name": "MySQL",
-  "query": "SELECT * FROM Cars",
+  "query": "SELECT car_id, car_name, carmodelnum, car_color, car_mileage, \n        car_isflooding as `car_isflooding: bool`, \n        car_issmoked as `car_issmoked: bool`, created_at, updated_at \n        FROM Cars WHERE car_id = ?",
   "describe": {
     "columns": [
       {
@@ -45,7 +45,7 @@
       },
       {
         "ordinal": 4,
-        "name": "car_milage",
+        "name": "car_mileage",
         "type_info": {
           "type": "Long",
           "flags": "NOT_NULL | NO_DEFAULT_VALUE",
@@ -55,7 +55,7 @@
       },
       {
         "ordinal": 5,
-        "name": "car_isflooding",
+        "name": "car_isflooding: bool",
         "type_info": {
           "type": "Tiny",
           "flags": "NOT_NULL | NO_DEFAULT_VALUE",
@@ -65,7 +65,7 @@
       },
       {
         "ordinal": 6,
-        "name": "car_issmoked",
+        "name": "car_issmoked: bool",
         "type_info": {
           "type": "Tiny",
           "flags": "NOT_NULL | NO_DEFAULT_VALUE",
@@ -95,7 +95,7 @@
       }
     ],
     "parameters": {
-      "Right": 0
+      "Right": 1
     },
     "nullable": [
       false,
@@ -109,5 +109,5 @@
       false
     ]
   },
-  "hash": "9f07a6f2b16e859d18f45b57c7388548e4aae78a00481bd73e659b5eb6774dc9"
+  "hash": "3664fb310490e5a475fc4eb6c2a9a923ed7668dad947538f1645864235cfe9cc"
 }

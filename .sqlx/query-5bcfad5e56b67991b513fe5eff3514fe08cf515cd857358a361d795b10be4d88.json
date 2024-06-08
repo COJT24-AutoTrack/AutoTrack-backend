@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "\n        UPDATE Cars\n        SET car_name = ?, carmodelnum = ?, car_color = ?, car_mileage = ?, car_isflooding = ?, car_issmoked = ?, updated_at = CURRENT_TIMESTAMP\n        WHERE car_id = ?\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 7
+    },
+    "nullable": []
+  },
+  "hash": "5bcfad5e56b67991b513fe5eff3514fe08cf515cd857358a361d795b10be4d88"
+}

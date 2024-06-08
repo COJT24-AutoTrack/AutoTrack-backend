@@ -1,11 +1,11 @@
 {
   "db_name": "MySQL",
-  "query": "SELECT * FROM Accidents",
+  "query": "SELECT * FROM PeriodicInspection WHERE pi_id = ?",
   "describe": {
     "columns": [
       {
         "ordinal": 0,
-        "name": "accident_id",
+        "name": "pi_id",
         "type_info": {
           "type": "Long",
           "flags": "NOT_NULL | PRIMARY_KEY | AUTO_INCREMENT",
@@ -25,7 +25,17 @@
       },
       {
         "ordinal": 2,
-        "name": "accident_date",
+        "name": "pi_name",
+        "type_info": {
+          "type": "VarString",
+          "flags": "NOT_NULL | NO_DEFAULT_VALUE",
+          "char_set": 224,
+          "max_size": 1020
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "pi_date",
         "type_info": {
           "type": "Date",
           "flags": "NOT_NULL | BINARY | NO_DEFAULT_VALUE",
@@ -34,17 +44,17 @@
         }
       },
       {
-        "ordinal": 3,
-        "name": "accident_description",
+        "ordinal": 4,
+        "name": "pi_nextdate",
         "type_info": {
-          "type": "Blob",
-          "flags": "NOT_NULL | BLOB | NO_DEFAULT_VALUE",
-          "char_set": 224,
-          "max_size": 262140
+          "type": "Date",
+          "flags": "NOT_NULL | BINARY | NO_DEFAULT_VALUE",
+          "char_set": 63,
+          "max_size": 10
         }
       },
       {
-        "ordinal": 4,
+        "ordinal": 5,
         "name": "created_at",
         "type_info": {
           "type": "Timestamp",
@@ -54,7 +64,7 @@
         }
       },
       {
-        "ordinal": 5,
+        "ordinal": 6,
         "name": "updated_at",
         "type_info": {
           "type": "Timestamp",
@@ -65,9 +75,10 @@
       }
     ],
     "parameters": {
-      "Right": 0
+      "Right": 1
     },
     "nullable": [
+      false,
       false,
       false,
       false,
@@ -76,5 +87,5 @@
       false
     ]
   },
-  "hash": "0ba523adb52448633a14dabe0781de8492bd8218dfcbedf984c8c1179d6fe629"
+  "hash": "3d65888b672aa76d15d6b8d81507c501f680106155b2262c4356d425751a1cde"
 }

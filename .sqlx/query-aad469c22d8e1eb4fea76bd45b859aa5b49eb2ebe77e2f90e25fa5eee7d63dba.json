@@ -1,11 +1,11 @@
 {
   "db_name": "MySQL",
-  "query": "SELECT * FROM FuelEfficiencies",
+  "query": "SELECT car_id, car_name, carmodelnum, car_color, car_mileage, \n        car_isflooding as `car_isflooding: bool`, \n        car_issmoked as `car_issmoked: bool`, created_at, updated_at \n        FROM Cars",
   "describe": {
     "columns": [
       {
         "ordinal": 0,
-        "name": "fe_id",
+        "name": "car_id",
         "type_info": {
           "type": "Long",
           "flags": "NOT_NULL | PRIMARY_KEY | AUTO_INCREMENT",
@@ -15,47 +15,37 @@
       },
       {
         "ordinal": 1,
-        "name": "car_id",
+        "name": "car_name",
         "type_info": {
-          "type": "Long",
-          "flags": "NOT_NULL | MULTIPLE_KEY | NO_DEFAULT_VALUE",
-          "char_set": 63,
-          "max_size": 11
+          "type": "VarString",
+          "flags": "NOT_NULL | NO_DEFAULT_VALUE",
+          "char_set": 224,
+          "max_size": 1020
         }
       },
       {
         "ordinal": 2,
-        "name": "fe_date",
+        "name": "carmodelnum",
         "type_info": {
-          "type": "Date",
-          "flags": "NOT_NULL | BINARY | NO_DEFAULT_VALUE",
-          "char_set": 63,
-          "max_size": 10
+          "type": "VarString",
+          "flags": "NOT_NULL | NO_DEFAULT_VALUE",
+          "char_set": 224,
+          "max_size": 1020
         }
       },
       {
         "ordinal": 3,
-        "name": "fe_amount",
+        "name": "car_color",
         "type_info": {
-          "type": "Float",
+          "type": "VarString",
           "flags": "NOT_NULL | NO_DEFAULT_VALUE",
-          "char_set": 63,
-          "max_size": 12
+          "char_set": 224,
+          "max_size": 1020
         }
       },
       {
         "ordinal": 4,
-        "name": "fe_unitprice",
-        "type_info": {
-          "type": "Float",
-          "flags": "NOT_NULL | NO_DEFAULT_VALUE",
-          "char_set": 63,
-          "max_size": 12
-        }
-      },
-      {
-        "ordinal": 5,
-        "name": "fe_mileage",
+        "name": "car_mileage",
         "type_info": {
           "type": "Long",
           "flags": "NOT_NULL | NO_DEFAULT_VALUE",
@@ -64,7 +54,27 @@
         }
       },
       {
+        "ordinal": 5,
+        "name": "car_isflooding: bool",
+        "type_info": {
+          "type": "Tiny",
+          "flags": "NOT_NULL | NO_DEFAULT_VALUE",
+          "char_set": 63,
+          "max_size": 1
+        }
+      },
+      {
         "ordinal": 6,
+        "name": "car_issmoked: bool",
+        "type_info": {
+          "type": "Tiny",
+          "flags": "NOT_NULL | NO_DEFAULT_VALUE",
+          "char_set": 63,
+          "max_size": 1
+        }
+      },
+      {
+        "ordinal": 7,
         "name": "created_at",
         "type_info": {
           "type": "Timestamp",
@@ -74,7 +84,7 @@
         }
       },
       {
-        "ordinal": 7,
+        "ordinal": 8,
         "name": "updated_at",
         "type_info": {
           "type": "Timestamp",
@@ -95,8 +105,9 @@
       false,
       false,
       false,
+      false,
       false
     ]
   },
-  "hash": "2c0a46a54d0c00926bc4589447072fe547c4cd5bcb3e2af89623b4d104d333f3"
+  "hash": "aad469c22d8e1eb4fea76bd45b859aa5b49eb2ebe77e2f90e25fa5eee7d63dba"
 }

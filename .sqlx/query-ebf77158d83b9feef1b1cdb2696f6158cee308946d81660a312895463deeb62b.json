@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "DELETE FROM Maintenances WHERE maint_id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": []
+  },
+  "hash": "ebf77158d83b9feef1b1cdb2696f6158cee308946d81660a312895463deeb62b"
+}

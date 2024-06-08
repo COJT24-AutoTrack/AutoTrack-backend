@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "DELETE FROM Tunings WHERE tuning_id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": []
+  },
+  "hash": "34e54b6bb827afdb8484f0e150ba20293aa64a97d8ecf338655453fdce13149b"
+}

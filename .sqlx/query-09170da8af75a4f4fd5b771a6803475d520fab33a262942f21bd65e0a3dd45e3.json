@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "DELETE FROM FuelEfficiencies WHERE fe_id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": []
+  },
+  "hash": "09170da8af75a4f4fd5b771a6803475d520fab33a262942f21bd65e0a3dd45e3"
+}

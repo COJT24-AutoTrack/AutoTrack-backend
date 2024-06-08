@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "DELETE FROM Accidents WHERE accident_id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": []
+  },
+  "hash": "0f643257fb703588637eb715e1dbe13a9213a01a0462fbea2cef4bc6a962178d"
+}

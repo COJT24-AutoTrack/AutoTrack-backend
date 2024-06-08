@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "DELETE FROM Cars WHERE car_id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": []
+  },
+  "hash": "c9748b9e002fe539d7eed4d1901ab4588fdc260e0eb9f195e33d523c4d3a007f"
+}

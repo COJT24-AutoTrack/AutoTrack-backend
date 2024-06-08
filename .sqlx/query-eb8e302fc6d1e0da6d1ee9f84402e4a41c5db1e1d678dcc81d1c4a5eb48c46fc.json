@@ -1,6 +1,6 @@
 {
   "db_name": "MySQL",
-  "query": "SELECT * FROM Accidents",
+  "query": "\n                SELECT accident_id, car_id, accident_date as \"accident_date: _\", accident_description, created_at, updated_at\n                FROM Accidents\n                WHERE accident_id = ?\n                ",
   "describe": {
     "columns": [
       {
@@ -25,7 +25,7 @@
       },
       {
         "ordinal": 2,
-        "name": "accident_date",
+        "name": "accident_date: _",
         "type_info": {
           "type": "Date",
           "flags": "NOT_NULL | BINARY | NO_DEFAULT_VALUE",
@@ -65,7 +65,7 @@
       }
     ],
     "parameters": {
-      "Right": 0
+      "Right": 1
     },
     "nullable": [
       false,
@@ -76,5 +76,5 @@
       false
     ]
   },
-  "hash": "0ba523adb52448633a14dabe0781de8492bd8218dfcbedf984c8c1179d6fe629"
+  "hash": "eb8e302fc6d1e0da6d1ee9f84402e4a41c5db1e1d678dcc81d1c4a5eb48c46fc"
 }

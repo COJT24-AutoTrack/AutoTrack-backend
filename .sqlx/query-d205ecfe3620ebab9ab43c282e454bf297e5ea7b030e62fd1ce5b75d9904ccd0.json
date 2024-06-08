@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "DELETE FROM PeriodicInspection WHERE pi_id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": []
+  },
+  "hash": "d205ecfe3620ebab9ab43c282e454bf297e5ea7b030e62fd1ce5b75d9904ccd0"
+}

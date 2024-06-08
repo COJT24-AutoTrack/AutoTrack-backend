@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "\n        UPDATE PeriodicInspection\n        SET car_id = ?, pi_name = ?, pi_date = ?, pi_nextdate = ?, updated_at = CURRENT_TIMESTAMP\n        WHERE pi_id = ?\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 5
+    },
+    "nullable": []
+  },
+  "hash": "996fe40b756a07c0a09eb69f05a421274a3080c8998aa69467e35e96d5d6a26e"
+}

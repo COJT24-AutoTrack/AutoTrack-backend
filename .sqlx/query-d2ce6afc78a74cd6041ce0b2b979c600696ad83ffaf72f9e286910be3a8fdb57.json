@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "\n        UPDATE Users\n        SET user_email = ?, user_name = ?, user_password = ?, updated_at = CURRENT_TIMESTAMP\n        WHERE user_id = ?\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 4
+    },
+    "nullable": []
+  },
+  "hash": "d2ce6afc78a74cd6041ce0b2b979c600696ad83ffaf72f9e286910be3a8fdb57"
+}

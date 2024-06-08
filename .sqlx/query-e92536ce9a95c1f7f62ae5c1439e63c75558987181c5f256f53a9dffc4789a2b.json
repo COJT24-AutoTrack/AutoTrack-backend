@@ -1,11 +1,11 @@
 {
   "db_name": "MySQL",
-  "query": "SELECT * FROM Accidents",
+  "query": "\n                SELECT fe_id, car_id, fe_date as \"fe_date: _\", fe_amount, fe_unitprice, fe_mileage, created_at, updated_at\n                FROM FuelEfficiencies\n                WHERE fe_id = ?\n                ",
   "describe": {
     "columns": [
       {
         "ordinal": 0,
-        "name": "accident_id",
+        "name": "fe_id",
         "type_info": {
           "type": "Long",
           "flags": "NOT_NULL | PRIMARY_KEY | AUTO_INCREMENT",
@@ -25,7 +25,7 @@
       },
       {
         "ordinal": 2,
-        "name": "accident_date",
+        "name": "fe_date: _",
         "type_info": {
           "type": "Date",
           "flags": "NOT_NULL | BINARY | NO_DEFAULT_VALUE",
@@ -35,16 +35,36 @@
       },
       {
         "ordinal": 3,
-        "name": "accident_description",
+        "name": "fe_amount",
         "type_info": {
-          "type": "Blob",
-          "flags": "NOT_NULL | BLOB | NO_DEFAULT_VALUE",
-          "char_set": 224,
-          "max_size": 262140
+          "type": "Float",
+          "flags": "NOT_NULL | NO_DEFAULT_VALUE",
+          "char_set": 63,
+          "max_size": 12
         }
       },
       {
         "ordinal": 4,
+        "name": "fe_unitprice",
+        "type_info": {
+          "type": "Float",
+          "flags": "NOT_NULL | NO_DEFAULT_VALUE",
+          "char_set": 63,
+          "max_size": 12
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "fe_mileage",
+        "type_info": {
+          "type": "Long",
+          "flags": "NOT_NULL | NO_DEFAULT_VALUE",
+          "char_set": 63,
+          "max_size": 11
+        }
+      },
+      {
+        "ordinal": 6,
         "name": "created_at",
         "type_info": {
           "type": "Timestamp",
@@ -54,7 +74,7 @@
         }
       },
       {
-        "ordinal": 5,
+        "ordinal": 7,
         "name": "updated_at",
         "type_info": {
           "type": "Timestamp",
@@ -65,9 +85,11 @@
       }
     ],
     "parameters": {
-      "Right": 0
+      "Right": 1
     },
     "nullable": [
+      false,
+      false,
       false,
       false,
       false,
@@ -76,5 +98,5 @@
       false
     ]
   },
-  "hash": "0ba523adb52448633a14dabe0781de8492bd8218dfcbedf984c8c1179d6fe629"
+  "hash": "e92536ce9a95c1f7f62ae5c1439e63c75558987181c5f256f53a9dffc4789a2b"
 }

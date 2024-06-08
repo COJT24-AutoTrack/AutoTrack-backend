@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "\n        INSERT INTO Accidents (car_id, accident_date, accident_description, created_at)\n        VALUES (?, ?, ?, CURRENT_TIMESTAMP)\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 3
+    },
+    "nullable": []
+  },
+  "hash": "29f34bbd4edcafdc57572983b7cc528938c5a3328d1bb11f95ae959a5acf7633"
+}
