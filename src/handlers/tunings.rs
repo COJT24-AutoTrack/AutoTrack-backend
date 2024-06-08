@@ -16,7 +16,7 @@ pub async fn create_tuning(
     let db_pool = state.lock().await.db_pool.clone();
 
     match query!(
-        "INSERT INTO Tunings (car_id, tuning_name, tuning_date, tuning_description, created_at) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)",
+        "INSERT INTO Tunings (car_id, tuning_name, tuning_date, tuning_description) VALUES (?, ?, ?, ?)",
         new_tuning.car_id,
         new_tuning.tuning_name,
         new_tuning.tuning_date,
@@ -99,7 +99,7 @@ pub async fn update_tuning(
     let db_pool = state.lock().await.db_pool.clone();
 
     match query!(
-        "UPDATE Tunings SET car_id = ?, tuning_name = ?, tuning_date = ?, tuning_description = ?, updated_at = CURRENT_TIMESTAMP WHERE tuning_id = ?",
+        "UPDATE Tunings SET car_id = ?, tuning_name = ?, tuning_date = ?, tuning_description = ? WHERE tuning_id = ?",
         updated_tuning.car_id,
         updated_tuning.tuning_name,
         updated_tuning.tuning_date,

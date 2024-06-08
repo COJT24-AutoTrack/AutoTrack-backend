@@ -16,7 +16,7 @@ pub async fn create_accident(
     let db_pool = state.lock().await.db_pool.clone();
 
     match query!(
-        "INSERT INTO Accidents (car_id, accident_date, accident_description, created_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP)",
+        "INSERT INTO Accidents (car_id, accident_date, accident_description) VALUES (?, ?, ?)",
         new_accident.car_id,
         new_accident.accident_date,
         new_accident.accident_description
@@ -91,7 +91,7 @@ pub async fn update_accident(
     let db_pool = state.lock().await.db_pool.clone();
 
     match query!(
-        "UPDATE Accidents SET car_id = ?, accident_date = ?, accident_description = ?, updated_at = CURRENT_TIMESTAMP WHERE accident_id = ?",
+        "UPDATE Accidents SET car_id = ?, accident_date = ?, accident_description = ? WHERE accident_id = ?",
         updated_accident.car_id,
         updated_accident.accident_date,
         updated_accident.accident_description,

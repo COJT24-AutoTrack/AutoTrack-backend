@@ -16,7 +16,7 @@ pub async fn create_maintenance(
     let db_pool = state.lock().await.db_pool.clone();
 
     match query!(
-        "INSERT INTO Maintenances (car_id, maint_type, maint_date, maint_description, created_at) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)",
+        "INSERT INTO Maintenances (car_id, maint_type, maint_date, maint_description) VALUES (?, ?, ?, ?)",
         new_maintenance.car_id,
         new_maintenance.maint_type,
         new_maintenance.maint_date,
@@ -92,7 +92,7 @@ pub async fn update_maintenance(
     let db_pool = state.lock().await.db_pool.clone();
 
     match query!(
-        "UPDATE Maintenances SET car_id = ?, maint_type = ?, maint_date = ?, maint_description = ?, updated_at = CURRENT_TIMESTAMP WHERE maint_id = ?",
+        "UPDATE Maintenances SET car_id = ?, maint_type = ?, maint_date = ?, maint_description = ? WHERE maint_id = ?",
         updated_maintenance.car_id,
         updated_maintenance.maint_type,
         updated_maintenance.maint_date,

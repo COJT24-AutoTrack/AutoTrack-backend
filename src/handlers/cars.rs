@@ -129,7 +129,7 @@ pub async fn update_car(
     let db_pool = state.lock().await.db_pool.clone();
 
     let result = query!(
-        "UPDATE Cars SET car_name = ?, carmodelnum = ?, car_color = ?, car_mileage = ?, car_isflooding = ?, car_issmoked = ?, updated_at = CURRENT_TIMESTAMP WHERE car_id = ?",
+        "UPDATE Cars SET car_name = ?, carmodelnum = ?, car_color = ?, car_mileage = ?, car_isflooding = ?, car_issmoked = ? WHERE car_id = ?",
         updated_car.car_name,
         updated_car.carmodelnum,
         updated_car.car_color,

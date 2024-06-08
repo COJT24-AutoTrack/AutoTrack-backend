@@ -16,7 +16,7 @@ pub async fn create_fuel_efficiency(
     let db_pool = state.lock().await.db_pool.clone();
 
     match query!(
-        "INSERT INTO FuelEfficiencies (car_id, fe_date, fe_amount, fe_unitprice, fe_mileage, created_at) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)",
+        "INSERT INTO FuelEfficiencies (car_id, fe_date, fe_amount, fe_unitprice, fe_mileage) VALUES (?, ?, ?, ?, ?)",
         new_fuel_efficiency.car_id,
         new_fuel_efficiency.fe_date,
         new_fuel_efficiency.fe_amount,
@@ -93,7 +93,7 @@ pub async fn update_fuel_efficiency(
     let db_pool = state.lock().await.db_pool.clone();
 
     match query!(
-        "UPDATE FuelEfficiencies SET car_id = ?, fe_date = ?, fe_amount = ?, fe_unitprice = ?, fe_mileage = ?, updated_at = CURRENT_TIMESTAMP WHERE fe_id = ?",
+        "UPDATE FuelEfficiencies SET car_id = ?, fe_date = ?, fe_amount = ?, fe_unitprice = ?, fe_mileage = ? WHERE fe_id = ?",
         updated_fuel_efficiency.car_id,
         updated_fuel_efficiency.fe_date,
         updated_fuel_efficiency.fe_amount,
