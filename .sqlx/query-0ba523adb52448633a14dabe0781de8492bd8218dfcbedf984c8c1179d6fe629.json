@@ -48,7 +48,7 @@
         "name": "created_at",
         "type_info": {
           "type": "Timestamp",
-          "flags": "NOT_NULL | BINARY | TIMESTAMP",
+          "flags": "BINARY | TIMESTAMP",
           "char_set": 63,
           "max_size": 19
         }
@@ -58,7 +58,7 @@
         "name": "updated_at",
         "type_info": {
           "type": "Timestamp",
-          "flags": "NOT_NULL | BINARY | TIMESTAMP | ON_UPDATE_NOW",
+          "flags": "BINARY | TIMESTAMP | ON_UPDATE_NOW",
           "char_set": 63,
           "max_size": 19
         }
@@ -72,8 +72,8 @@
       false,
       false,
       false,
-      false,
-      false
+      true,
+      true
     ]
   },
   "hash": "0ba523adb52448633a14dabe0781de8492bd8218dfcbedf984c8c1179d6fe629"
