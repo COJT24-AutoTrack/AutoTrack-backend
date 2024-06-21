@@ -2,7 +2,7 @@
 
 ## Overview
 
-This API provides endpoints for managing users, cars, tunings, maintenances, fuel efficiencies, accidents, and periodic inspections. Each resource has its own set of endpoints for CRUD operations. The base URL for all endpoints is `http://your-domain.com`.
+This API provides endpoints for managing users, cars, tunings, maintenances, fuel efficiencies, accidents, and periodic inspections. Each resource has its own set of endpoints for CRUD operations. The base URL for all endpoints is ~`http://your-domain.com`~.
 
 ## Authentication
 
