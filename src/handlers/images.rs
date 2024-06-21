@@ -5,16 +5,19 @@ use axum::{
 };
 use reqwest::Client;
 use std::sync::Arc;
+use std::env;
 use tokio::sync::Mutex;
 use crate::db::AppState;
+use dotenv::dotenv;
 
 pub async fn upload_image(
     Extension(_state): Extension<Arc<Mutex<AppState>>>, // db_poolを削除
     mut multipart: Multipart,
 ) -> impl IntoResponse {
     // Cloudflare R2エンドポイントとAPIトークンの設定
-    let r2_endpoint = "https://<your-cloudflare-r2-endpoint>";
-    let api_token = "<your-api-token>";
+	dotenv().ok();
+    let r2_endpoint = env::var("R2_ENDPOINT_URL").expect("R2_ENDPOINT_URL must be set");
+    let api_token = env::var("R2_API_TOKEN").expect("R2_API_TOKEN must be set");
 
     if let Some(field) = multipart.next_field().await.unwrap() {
         let data = field.bytes().await.unwrap();
