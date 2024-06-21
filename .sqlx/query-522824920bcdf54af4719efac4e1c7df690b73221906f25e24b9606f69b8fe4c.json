@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "UPDATE Cars SET car_image_url = ? WHERE car_id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": []
+  },
+  "hash": "522824920bcdf54af4719efac4e1c7df690b73221906f25e24b9606f69b8fe4c"
+}

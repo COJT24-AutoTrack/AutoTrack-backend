@@ -1,6 +1,6 @@
 {
   "db_name": "MySQL",
-  "query": "SELECT car_id, car_name, carmodelnum, car_color, car_mileage, car_isflooding as `car_isflooding: bool`, car_issmoked as `car_issmoked: bool`, created_at, updated_at FROM Cars",
+  "query": "SELECT car_id, car_name, carmodelnum, car_color, car_mileage, car_isflooding as `car_isflooding: bool`, car_issmoked as `car_issmoked: bool`, car_image_url, created_at, updated_at FROM Cars WHERE car_id = ?",
   "describe": {
     "columns": [
       {
@@ -75,27 +75,37 @@
       },
       {
         "ordinal": 7,
+        "name": "car_image_url",
+        "type_info": {
+          "type": "VarString",
+          "flags": "",
+          "char_set": 224,
+          "max_size": 1020
+        }
+      },
+      {
+        "ordinal": 8,
         "name": "created_at",
         "type_info": {
           "type": "Timestamp",
-          "flags": "BINARY | TIMESTAMP",
+          "flags": "NOT_NULL | BINARY | TIMESTAMP",
           "char_set": 63,
           "max_size": 19
         }
       },
       {
-        "ordinal": 8,
+        "ordinal": 9,
         "name": "updated_at",
         "type_info": {
           "type": "Timestamp",
-          "flags": "BINARY | TIMESTAMP | ON_UPDATE_NOW",
+          "flags": "NOT_NULL | BINARY | TIMESTAMP | ON_UPDATE_NOW",
           "char_set": 63,
           "max_size": 19
         }
       }
     ],
     "parameters": {
-      "Right": 0
+      "Right": 1
     },
     "nullable": [
       false,
@@ -106,8 +116,9 @@
       false,
       false,
       true,
-      true
+      false,
+      false
     ]
   },
-  "hash": "099311bc4fe5f951dedda7d4e6cd0d9006fee9e1c6480c1add649229dbdccdd1"
+  "hash": "3da9948d13b2aaee216bc2698320608da7d72e33ffaafe3f7b19db5111cbff72"
 }
