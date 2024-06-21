@@ -211,6 +211,33 @@ Currently, this API does not include authentication. Ensure that your API server
   - Path Parameters: `id` - Car ID.
   - Response: Status code indicating success or failure.
 
+- `PUT /cars/:id/image`: Update car image by ID.
+  - Path Parameters: `id` - Car ID.
+  - Request Body:
+
+    ```json
+    {
+      "image_url": "https://example.com/path/to/car_image.jpg"
+    }
+    ```
+
+  - Response:
+
+    ```json
+    {
+      "car_id": 1,
+      "car_name": "Toyota Prius",
+      "carmodelnum": "X123",
+      "car_color": "Blue",
+      "car_mileage": 10000,
+      "car_isflooding": false,
+      "car_issmoked": false,
+      "car_image_url": "https://example.com/path/to/car_image.jpg",
+      "created_at": "2023-06-21T10:20:30Z",
+      "updated_at": "2023-06-21T11:00:00Z"
+    }
+    ```
+
 ### Tunings
 
 - `POST /tunings`: Create a new tuning.
