@@ -22,6 +22,7 @@ CREATE TABLE Cars (
     car_mileage INT NOT NULL,
     car_isflooding BOOLEAN NOT NULL,
     car_issmoked BOOLEAN NOT NULL,
+    car_image_url VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

@@ -10,6 +10,7 @@ pub struct Car {
     pub car_mileage: i32,
     pub car_isflooding: bool,
     pub car_issmoked: bool,
+    pub car_image_url: Option<String>,
     pub created_at: Option<OffsetDateTime>,
     pub updated_at: Option<OffsetDateTime>,
 }

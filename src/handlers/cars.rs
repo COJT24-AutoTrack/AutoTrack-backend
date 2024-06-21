@@ -18,7 +18,7 @@ pub struct CreateCarRequest {
 
 pub async fn create_car(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Json(req): Json<CreateCarRequest>  // 修正点: 新しい構造体を受け取る
+    Json(req): Json<CreateCarRequest>
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
@@ -32,15 +32,15 @@ pub async fn create_car(
         }
     };
 
-    // 車を作成
     let car_result = query!(
-        "INSERT INTO Cars (car_name, carmodelnum, car_color, car_mileage, car_isflooding, car_issmoked) VALUES (?, ?, ?, ?, ?, ?)",
+        "INSERT INTO Cars (car_name, carmodelnum, car_color, car_mileage, car_isflooding, car_issmoked, car_image_url) VALUES (?, ?, ?, ?, ?, ?, ?)",
         car.car_name,
         car.carmodelnum,
         car.car_color,
         car.car_mileage,
         car.car_isflooding as i8,
-        car.car_issmoked as i8
+        car.car_issmoked as i8,
+        car.car_image_url
     )
     .execute(&mut *tx)
     .await;
@@ -50,14 +50,13 @@ pub async fn create_car(
             let car_id = res.last_insert_id();
             let car = query_as!(
                 Car,
-                "SELECT car_id, car_name, carmodelnum, car_color, car_mileage, car_isflooding as `car_isflooding: bool`, car_issmoked as `car_issmoked: bool`, created_at, updated_at FROM Cars WHERE car_id = ?",
+                "SELECT car_id, car_name, carmodelnum, car_color, car_mileage, car_isflooding as `car_isflooding: bool`, car_issmoked as `car_issmoked: bool`, car_image_url, created_at, updated_at FROM Cars WHERE car_id = ?",
                 car_id
             )
             .fetch_one(&mut *tx)
             .await
             .unwrap();
 
-            // user_carテーブルにエントリを追加
             let user_car_result = query!(
                 "INSERT INTO user_car (user_id, car_id) VALUES (?, ?)",
                 user_id,
@@ -93,7 +92,7 @@ pub async fn get_cars(
 
     match query_as!(
         Car,
-        "SELECT car_id, car_name, carmodelnum, car_color, car_mileage, car_isflooding as `car_isflooding: bool`, car_issmoked as `car_issmoked: bool`, created_at, updated_at FROM Cars"
+        "SELECT car_id, car_name, carmodelnum, car_color, car_mileage, car_isflooding as `car_isflooding: bool`, car_issmoked as `car_issmoked: bool`, car_image_url, created_at, updated_at FROM Cars"
     )
     .fetch_all(&db_pool)
     .await
@@ -114,7 +113,7 @@ pub async fn get_car(
 
     match query_as!(
         Car,
-        "SELECT car_id, car_name, carmodelnum, car_color, car_mileage, car_isflooding as `car_isflooding: bool`, car_issmoked as `car_issmoked: bool`, created_at, updated_at FROM Cars WHERE car_id = ?",
+        "SELECT car_id, car_name, carmodelnum, car_color, car_mileage, car_isflooding as `car_isflooding: bool`, car_issmoked as `car_issmoked: bool`, car_image_url, created_at, updated_at FROM Cars WHERE car_id = ?",
         id
     )
     .fetch_one(&db_pool)
@@ -136,13 +135,14 @@ pub async fn update_car(
     let db_pool = state.lock().await.db_pool.clone();
 
     let result = query!(
-        "UPDATE Cars SET car_name = ?, carmodelnum = ?, car_color = ?, car_mileage = ?, car_isflooding = ?, car_issmoked = ? WHERE car_id = ?",
+        "UPDATE Cars SET car_name = ?, carmodelnum = ?, car_color = ?, car_mileage = ?, car_isflooding = ?, car_issmoked = ?, car_image_url = ? WHERE car_id = ?",
         updated_car.car_name,
         updated_car.carmodelnum,
         updated_car.car_color,
         updated_car.car_mileage,
         updated_car.car_isflooding as i8,
         updated_car.car_issmoked as i8,
+        updated_car.car_image_url,
         id
     )
     .execute(&db_pool)
@@ -152,7 +152,7 @@ pub async fn update_car(
         Ok(_) => {
             match query_as!(
                 Car,
-                "SELECT car_id, car_name, carmodelnum, car_color, car_mileage, car_isflooding as `car_isflooding: bool`, car_issmoked as `car_issmoked: bool`, created_at, updated_at FROM Cars WHERE car_id = ?",
+                "SELECT car_id, car_name, carmodelnum, car_color, car_mileage, car_isflooding as `car_isflooding: bool`, car_issmoked as `car_issmoked: bool`, car_image_url, created_at, updated_at FROM Cars WHERE car_id = ?",
                 id
             )
             .fetch_one(&db_pool)
@@ -186,7 +186,6 @@ pub async fn delete_car(
         }
     };
 
-    // user_carテーブルからエントリを削除
     let user_car_result = query!(
         "DELETE FROM user_car WHERE car_id = ?",
         id
@@ -196,7 +195,6 @@ pub async fn delete_car(
 
     match user_car_result {
         Ok(_) => {
-            // Carsテーブルからエントリを削除
             let car_result = query!(
                 "DELETE FROM Cars WHERE car_id = ?",
                 id
@@ -219,6 +217,30 @@ pub async fn delete_car(
         Err(e) => {
             tx.rollback().await.unwrap();
             eprintln!("Failed to delete user_car entry: {:?}", e);
+            StatusCode::INTERNAL_SERVER_ERROR.into_response()
+        }
+    }
+}
+
+pub async fn update_car_image(
+    Extension(state): Extension<Arc<Mutex<AppState>>>,
+    Path(car_id): Path<i32>,
+    Json(image_url): Json<String>
+) -> impl IntoResponse {
+    let db_pool = state.lock().await.db_pool.clone();
+
+    let result = query!(
+        "UPDATE Cars SET car_image_url = ? WHERE car_id = ?",
+        image_url,
+        car_id
+    )
+    .execute(&db_pool)
+    .await;
+
+    match result {
+        Ok(_) => (StatusCode::OK, "Image URL updated successfully").into_response(),
+        Err(e) => {
+            eprintln!("Failed to update car image URL: {:?}", e);
             StatusCode::INTERNAL_SERVER_ERROR.into_response()
         }
     }
