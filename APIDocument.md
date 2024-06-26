@@ -103,6 +103,28 @@ Currently, this API does not include authentication. Ensure that your API server
   - Path Parameters: `id` - User ID.
   - Response: Status code indicating success or failure.
 
+- `GET /users/:user_id/cars`: Get all cars associated with a user.
+  - Path Parameters: `user_id` - User ID.
+  - Response:
+
+    ```json
+    [
+      {
+        "car_id": 1,
+        "car_name": "Toyota Prius",
+        "carmodelnum": "X123",
+        "car_color": "Blue",
+        "car_mileage": 10000,
+        "car_isflooding": false,
+        "car_issmoked": false,
+        "car_image_url": "http://example.com/image.jpg",
+        "created_at": "2023-06-21T10:20:30Z",
+        "updated_at": "2023-06-21T10:20:30Z"
+      },
+      ...
+    ]
+    ```
+
 ### Cars
 
 - `POST /cars`: Create a new car.

@@ -5,7 +5,7 @@ use crate::db::AppState;
 
 use crate::handlers::{
     users::{create_user, get_users, get_user, update_user, delete_user},
-    cars::{create_car, get_cars, get_car, update_car, delete_car, update_car_image},
+    cars::{create_car, get_cars, get_car, update_car, delete_car, update_car_image, get_user_cars},
     tunings::{create_tuning, get_tunings, get_tuning, update_tuning, delete_tuning},
     maintenances::{create_maintenance, get_maintenances, get_maintenance, update_maintenance, delete_maintenance},
     fuel_efficiencies::{create_fuel_efficiency, get_fuel_efficiencies, get_fuel_efficiency, update_fuel_efficiency, delete_fuel_efficiency},
@@ -19,6 +19,7 @@ pub fn create_routes(state: Arc<Mutex<AppState>>) -> Router {
         .route("/", get(|| async { "Hello, world!" }).post(|| async { "Hello, world!" }))
         .route("/users", post(create_user).get(get_users))
         .route("/users/:id", get(get_user).put(update_user).delete(delete_user))
+        .route("/users/:user_id/cars", get(get_user_cars))
         .route("/cars", post(create_car).get(get_cars))
         .route("/cars/:id", get(get_car).put(update_car).delete(delete_car))
         .route("/cars/:id/image", put(update_car_image))

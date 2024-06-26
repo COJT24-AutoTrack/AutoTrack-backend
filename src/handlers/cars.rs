@@ -245,3 +245,28 @@ pub async fn update_car_image(
         }
     }
 }
+
+pub async fn get_user_cars(
+    Extension(state): Extension<Arc<Mutex<AppState>>>,
+    Path(user_id): Path<i32>
+) -> impl IntoResponse {
+    let db_pool = state.lock().await.db_pool.clone();
+
+    match query_as!(
+        Car,
+        "SELECT c.car_id, c.car_name, c.carmodelnum, c.car_color, c.car_mileage, c.car_isflooding as `car_isflooding: bool`, c.car_issmoked as `car_issmoked: bool`, c.car_image_url, c.created_at, c.updated_at 
+         FROM Cars c
+         JOIN user_car uc ON c.car_id = uc.car_id
+         WHERE uc.user_id = ?",
+        user_id
+    )
+    .fetch_all(&db_pool)
+    .await
+    {
+        Ok(cars) => (StatusCode::OK, Json(cars)).into_response(),
+        Err(e) => {
+            eprintln!("Failed to fetch user cars: {:?}", e);
+            StatusCode::INTERNAL_SERVER_ERROR.into_response()
+        }
+    }
+}
