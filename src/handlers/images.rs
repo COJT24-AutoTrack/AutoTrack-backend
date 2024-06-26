@@ -16,12 +16,20 @@ pub async fn upload_image(
 ) -> impl IntoResponse {
     dotenv().ok();
     let r2_endpoint = env::var("R2_ENDPOINT_URL").expect("R2_ENDPOINT_URL must be set");
-    let api_token = env::var("R2_API_TOKEN").expect("R2_API_TOKEN must be set");
+    let access_key_id = env::var("R2_ACCESS_KEY_ID").expect("R2_ACCESS_KEY_ID must be set");
+    let secret_access_key = env::var("R2_SECRET_ACCESS_KEY").expect("R2_SECRET_ACCESS_KEY must be set");
 
     println!("R2_ENDPOINT_URL: {}", r2_endpoint);
-    println!("R2_API_TOKEN: {}", api_token);
+    println!("R2_ACCESS_KEY_ID: {}", access_key_id);
+    println!("R2_SECRET_ACCESS_KEY: {}", secret_access_key);
 
-    while let Some(field) = multipart.next_field().await.unwrap() {
+    while let Some(field) = match multipart.next_field().await {
+        Ok(field) => field,
+        Err(e) => {
+            println!("Error reading field: {:?}", e);
+            return StatusCode::INTERNAL_SERVER_ERROR.into_response();
+        }
+    } {
         let filename = field.file_name().unwrap_or("unknown").to_string();
         println!("Uploading file: {}", filename);
 
@@ -37,7 +45,8 @@ pub async fn upload_image(
         let client = Client::new();
         let response = match client
             .put(&r2_endpoint)
-            .header("Authorization", format!("Bearer {}", api_token))
+            .header("x-amz-date", chrono::Utc::now().format("%Y%m%dT%H%M%SZ").to_string())
+            .header("Authorization", format!("AWS {}:{}", access_key_id, secret_access_key))
             .body(data)
             .send()
             .await {
