@@ -545,6 +545,28 @@ Currently, this API does not include authentication. Ensure that your API server
   - Path Parameters: `id` - Fuel Efficiency ID.
   - Response: Status code indicating success or failure.
 
+  - `GET /cars/:car_id/fuel_efficiencies/calculate`: Calculate and get the fuel efficiency for a specific car.
+  - Path Parameters: `car_id` - Car ID.
+  - Response:
+  
+    ```json
+    {
+      "car_id": 1,
+      "total_fuel_efficiency": 8.6,
+      "fuel_efficiencies": [
+        {
+          "fe_id": 1,
+          "fuel_efficiency": 8.6
+        },
+        {
+          "fe_id": 2,
+          "fuel_efficiency": 9.0
+        },
+        ...
+      ]
+    }
+    ```
+
 ### Accidents
 
 - `POST /accidents`: Create a new accident record.

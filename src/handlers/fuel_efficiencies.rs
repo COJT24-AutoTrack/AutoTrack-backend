@@ -8,6 +8,7 @@ use tokio::sync::Mutex;
 use std::sync::Arc;
 use crate::db::AppState;
 use crate::models::fuel_efficiency::FuelEfficiency;
+use serde_json::json;
 
 pub async fn create_fuel_efficiency(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
@@ -144,4 +145,71 @@ pub async fn delete_fuel_efficiency(
             StatusCode::INTERNAL_SERVER_ERROR.into_response()
         }
     }
+}
+
+pub async fn calculate_fuel_efficiencies(
+    Extension(state): Extension<Arc<Mutex<AppState>>>,
+    Path(car_id): Path<i32>
+) -> impl IntoResponse {
+    let db_pool = state.lock().await.db_pool.clone();
+
+    // 給油記録を取得
+    let fuel_efficiencies: Vec<FuelEfficiency> = match query_as!(
+        FuelEfficiency,
+        "SELECT fe_id, car_id, fe_date, fe_amount, fe_unitprice, fe_mileage, created_at, updated_at 
+         FROM FuelEfficiencies 
+         WHERE car_id = ? 
+         ORDER BY fe_date",
+        car_id
+    )
+    .fetch_all(&db_pool)
+    .await
+    {
+        Ok(records) => records,
+        Err(e) => {
+            eprintln!("Failed to fetch fuel efficiencies: {:?}", e);
+            return StatusCode::INTERNAL_SERVER_ERROR.into_response();
+        }
+    };
+
+    if fuel_efficiencies.len() < 2 {
+        return (StatusCode::BAD_REQUEST, "Not enough data to calculate fuel efficiency").into_response();
+    }
+
+    let mut total_fuel = 0.0;
+    let mut total_distance = 0;
+    let mut fuel_efficiency_records = Vec::new();
+
+    for i in 1..fuel_efficiencies.len() {
+        let current = &fuel_efficiencies[i];
+
+        let distance = current.fe_mileage;
+        let fuel = current.fe_amount;
+
+        if distance <= 0 || fuel <= 0.0 {
+            return (StatusCode::BAD_REQUEST, "Invalid mileage or fuel data").into_response();
+        }
+
+        let efficiency = distance as f32 / fuel;
+        fuel_efficiency_records.push(json!({
+            "fe_id": current.fe_id,
+            "fuel_efficiency": efficiency
+        }));
+
+        total_fuel += fuel;
+        total_distance += distance;
+    }
+
+    if total_distance == 0 {
+        return (StatusCode::BAD_REQUEST, "Total distance is zero, cannot calculate fuel efficiency").into_response();
+    }
+
+    let total_fuel_efficiency = total_distance as f32 / total_fuel;
+    let response = json!({
+        "car_id": car_id,
+        "total_fuel_efficiency": total_fuel_efficiency,
+        "fuel_efficiencies": fuel_efficiency_records
+    });
+
+    (StatusCode::OK, Json(response)).into_response()
 }

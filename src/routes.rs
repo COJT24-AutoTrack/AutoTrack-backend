@@ -8,7 +8,7 @@ use crate::handlers::{
     cars::{create_car, get_cars, get_car, update_car, delete_car, update_car_image, get_user_cars},
     tunings::{create_tuning, get_tunings, get_tuning, update_tuning, delete_tuning},
     maintenances::{create_maintenance, get_maintenances, get_maintenance, update_maintenance, delete_maintenance},
-    fuel_efficiencies::{create_fuel_efficiency, get_fuel_efficiencies, get_fuel_efficiency, update_fuel_efficiency, delete_fuel_efficiency},
+    fuel_efficiencies::{create_fuel_efficiency, get_fuel_efficiencies, get_fuel_efficiency, update_fuel_efficiency, delete_fuel_efficiency, calculate_fuel_efficiencies},
     accidents::{create_accident, get_accidents, get_accident, update_accident, delete_accident},
     periodic_inspections::{create_periodic_inspection, get_periodic_inspections, get_periodic_inspection, update_periodic_inspection, delete_periodic_inspection},
     images::upload_image,
@@ -29,6 +29,7 @@ pub fn create_routes(state: Arc<Mutex<AppState>>) -> Router {
         .route("/maintenances/:id", get(get_maintenance).put(update_maintenance).delete(delete_maintenance))
         .route("/fuel_efficiencies", post(create_fuel_efficiency).get(get_fuel_efficiencies))
         .route("/fuel_efficiencies/:id", get(get_fuel_efficiency).put(update_fuel_efficiency).delete(delete_fuel_efficiency))
+        .route("/cars/:car_id/fuel_efficiencies/calculate", get(calculate_fuel_efficiencies))
         .route("/accidents", post(create_accident).get(get_accidents))
         .route("/accidents/:id", get(get_accident).put(update_accident).delete(delete_accident))
         .route("/periodic_inspections", post(create_periodic_inspection).get(get_periodic_inspections))
