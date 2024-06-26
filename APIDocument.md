@@ -545,7 +545,7 @@ Currently, this API does not include authentication. Ensure that your API server
   - Path Parameters: `id` - Fuel Efficiency ID.
   - Response: Status code indicating success or failure.
 
-  - `GET /cars/:car_id/fuel_efficiencies/calculate`: Calculate and get the fuel efficiency for a specific car.
+- `GET /cars/:car_id/fuel_efficiencies/calculate`: Calculate and get the fuel efficiency for a specific car.
   - Path Parameters: `car_id` - Car ID.
   - Response:
   
