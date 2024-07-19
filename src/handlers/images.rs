@@ -1,77 +1,50 @@
 use axum::{
-    extract::{Multipart, Extension},
-    response::IntoResponse,
-    http::StatusCode,
+    extract::multipart::Multipart,
+    response::{Json, Response},
 };
-use reqwest::Client;
-use std::sync::Arc;
-use std::env;
-use tokio::sync::Mutex;
-use crate::db::AppState;
+use cloudflare_r2_rs::r2::R2Manager;
 use dotenv::dotenv;
+use std::env;
+use tracing::{info, error};
 
-pub async fn upload_image(
-    Extension(_state): Extension<Arc<Mutex<AppState>>>, // db_poolを削除
-    mut multipart: Multipart,
-) -> impl IntoResponse {
-    dotenv().ok();
-    let r2_endpoint = env::var("R2_ENDPOINT_URL").expect("R2_ENDPOINT_URL must be set");
-    let access_key_id = env::var("R2_ACCESS_KEY_ID").expect("R2_ACCESS_KEY_ID must be set");
-    let secret_access_key = env::var("R2_SECRET_ACCESS_KEY").expect("R2_SECRET_ACCESS_KEY must be set");
+pub async fn upload_image(mut payload: Multipart) -> Result<Json<String>, Response> {
+    dotenv().ok(); // 環境変数をロード
 
-    println!("R2_ENDPOINT_URL: {}", r2_endpoint);
-    println!("R2_ACCESS_KEY_ID: {}", access_key_id);
-    println!("R2_SECRET_ACCESS_KEY: {}", secret_access_key);
+    let bucket = env::var("BUCKET_NAME").expect("BUCKET_NAME must be set");
+    let endpoint = env::var("R2_ENDPOINT_URL").expect("R2_ENDPOINT_URL must be set");
+    let client_id = env::var("R2_ACCESS_KEY_ID").expect("R2_ACCESS_KEY_ID must be set");
+    let secret = env::var("R2_SECRET_ACCESS_KEY").expect("R2_SECRET_ACCESS_KEY must be set");
 
-    while let Some(field) = match multipart.next_field().await {
-        Ok(field) => field,
-        Err(e) => {
-            println!("Error reading field: {:?}", e);
-            return StatusCode::INTERNAL_SERVER_ERROR.into_response();
-        }
-    } {
-        let filename = field.file_name().unwrap_or("unknown").to_string();
-        println!("Uploading file: {}", filename);
+    let r2_manager = R2Manager::new(&bucket, &endpoint, &client_id, &secret).await;
 
-        let data = match field.bytes().await {
-            Ok(bytes) => bytes,
-            Err(e) => {
-                println!("Failed to read file bytes: {:?}", e);
-                return StatusCode::INTERNAL_SERVER_ERROR.into_response();
-            }
-        };
+    while let Some(field) = payload.next_field().await.map_err(|e| {
+        error!("Error reading field: {}", e);
+        Response::builder()
+            .status(400)
+            .body(format!("Error reading field: {}", e).into())
+            .unwrap()
+    })? {
+        if let Some(file_name) = field.file_name() {
+            let file_name = file_name.to_owned();
+            let content = field.bytes().await.map_err(|e| {
+                error!("Error reading file content: {}", e);
+                Response::builder()
+                    .status(400)
+                    .body(format!("Error reading file content: {}", e).into())
+                    .unwrap()
+            })?;
+            let key = format!("images/{}", file_name);
+            r2_manager.upload(&key, &content, None, Some("image/jpeg")).await;
 
-        // Cloudflare R2にファイルをアップロード
-        let client = Client::new();
-        let response = match client
-            .put(&r2_endpoint)
-            .header("x-amz-date", chrono::Utc::now().format("%Y%m%dT%H%M%SZ").to_string())
-            .header("Authorization", format!("AWS {}:{}", access_key_id, secret_access_key))
-            .body(data)
-            .send()
-            .await {
-            Ok(res) => res,
-            Err(e) => {
-                println!("Error sending request to R2: {:?}", e);
-                return StatusCode::INTERNAL_SERVER_ERROR.into_response();
-            }
-        };
-
-        if response.status().is_success() {
-            let image_url = match response.text().await {
-                Ok(text) => text,
-                Err(e) => {
-                    println!("Failed to read response text: {:?}", e);
-                    return StatusCode::INTERNAL_SERVER_ERROR.into_response();
-                }
-            };
-            println!("Image uploaded successfully: {}", image_url);
-            return (StatusCode::OK, image_url).into_response();
-        } else {
-            println!("Failed to upload image: {:?}", response.status());
-            return StatusCode::INTERNAL_SERVER_ERROR.into_response();
+            let url = format!("https://r2.autotrack.work/images/{}", file_name);
+            info!("File uploaded successfully: {}", url);
+            return Ok(Json(url));
         }
     }
 
-    StatusCode::BAD_REQUEST.into_response()
+    error!("No file uploaded");
+    Err(axum::response::Response::builder()
+        .status(400)
+        .body("Error: No file uploaded".into())
+        .unwrap())
 }

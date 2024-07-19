@@ -1,7 +1,11 @@
-use axum::{Router, routing::get, routing::post, routing::put};
+use axum::{
+    Router, routing::get, routing::post, routing::put,
+    extract::DefaultBodyLimit,
+};
 use std::sync::Arc;
 use tokio::sync::Mutex;
 use crate::db::AppState;
+use tower::ServiceBuilder;
 
 use crate::handlers::{
     users::{create_user, get_users, get_user, update_user, delete_user},
@@ -16,7 +20,7 @@ use crate::handlers::{
 
 pub fn create_routes(state: Arc<Mutex<AppState>>) -> Router {
     Router::new()
-        .route("/", get(|| async { "Hello, world!" }).post(|| async { "Hello, world!" }))
+        .route("/", get(|| async { "Hello, world!!" }).post(|| async { "Hello, world!!" }))
         .route("/users", post(create_user).get(get_users))
         .route("/users/:id", get(get_user).put(update_user).delete(delete_user))
         .route("/users/:user_id/cars", get(get_user_cars))
@@ -34,6 +38,7 @@ pub fn create_routes(state: Arc<Mutex<AppState>>) -> Router {
         .route("/accidents/:id", get(get_accident).put(update_accident).delete(delete_accident))
         .route("/periodic_inspections", post(create_periodic_inspection).get(get_periodic_inspections))
         .route("/periodic_inspections/:id", get(get_periodic_inspection).put(update_periodic_inspection).delete(delete_periodic_inspection))
-        .route("/upload_image", post(upload_image))
+        .route("/images", post(upload_image))
         .layer(axum::Extension(state))
+        .layer(ServiceBuilder::new().layer(DefaultBodyLimit::max(100 * 1024 * 1024))) // 100MBのボディサイズ制限
 }
