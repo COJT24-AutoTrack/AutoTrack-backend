@@ -747,6 +747,16 @@ Currently, this API does not include authentication. Ensure that your API server
   - Path Parameters: `id` - Periodic Inspection ID.
   - Response: Status code indicating success or failure.
 
+### Images
+
+- `POST /images`: Upload a new image.
+  - Request: Multipart form data with the image file.
+  - example
+
+    ```sh
+    curl -X POST http://localhost:8369/images -F "file=@{filename}"
+    ```
+
 ## Models
 
 ### User
