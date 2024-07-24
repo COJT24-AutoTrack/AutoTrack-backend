@@ -1,44 +1,105 @@
 use axum::{
     Router, routing::get, routing::post, routing::put,
     extract::DefaultBodyLimit,
+    middleware::from_fn_with_state,
 };
 use std::sync::Arc;
 use tokio::sync::Mutex;
-use crate::db::AppState;
-use tower::ServiceBuilder;
+use crate::state::AppState;
+use axum::http::{header, Method};
+use tower_http::cors::{Any, CorsLayer};
+use tower_http::trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer};
+use tracing::Level;
+use utoipa::openapi::security::{HttpAuthScheme, HttpBuilder, SecurityScheme};
+use utoipa::Modify;
 
 use crate::handlers::{
-    users::{create_user, get_users, get_user, update_user, delete_user},
-    cars::{create_car, get_cars, get_car, update_car, delete_car, update_car_image, get_user_cars},
-    tunings::{create_tuning, get_tunings, get_tuning, update_tuning, delete_tuning},
-    maintenances::{create_maintenance, get_maintenances, get_maintenance, update_maintenance, delete_maintenance},
-    fuel_efficiencies::{create_fuel_efficiency, get_fuel_efficiencies, get_fuel_efficiency, update_fuel_efficiency, delete_fuel_efficiency, calculate_fuel_efficiencies},
-    accidents::{create_accident, get_accidents, get_accident, update_accident, delete_accident},
-    periodic_inspections::{create_periodic_inspection, get_periodic_inspections, get_periodic_inspection, update_periodic_inspection, delete_periodic_inspection},
-    images::upload_image,
+    accidents, cars, fuel_efficiencies, images, maintenances, periodic_inspections, tunings, users,
 };
+use crate::middleware::auth::jwt_auth;
 
 pub fn create_routes(state: Arc<Mutex<AppState>>) -> Router {
+    let user_routes = Router::new()
+        .route("/", post(users::create_user).get(users::get_users))
+        .route("/:id", get(users::get_user).put(users::update_user).delete(users::delete_user))
+        .route("/:user_id/cars", get(cars::get_user_cars));
+
+    let car_routes = Router::new()
+        .route("/", post(cars::create_car).get(cars::get_cars))
+        .route("/:id", get(cars::get_car).put(cars::update_car).delete(cars::delete_car))
+        .route("/:id/image", put(cars::update_car_image));
+
+    let tuning_routes = Router::new()
+        .route("/", post(tunings::create_tuning).get(tunings::get_tunings))
+        .route("/:id", get(tunings::get_tuning).put(tunings::update_tuning).delete(tunings::delete_tuning));
+
+    let maintenance_routes = Router::new()
+        .route("/", post(maintenances::create_maintenance).get(maintenances::get_maintenances))
+        .route("/:id", get(maintenances::get_maintenance).put(maintenances::update_maintenance).delete(maintenances::delete_maintenance));
+
+    let fuel_efficiency_routes = Router::new()
+        .route("/", post(fuel_efficiencies::create_fuel_efficiency).get(fuel_efficiencies::get_fuel_efficiencies))
+        .route("/:id", get(fuel_efficiencies::get_fuel_efficiency).put(fuel_efficiencies::update_fuel_efficiency).delete(fuel_efficiencies::delete_fuel_efficiency))
+        .route("/:car_id/fuel_efficiencies/calculate", get(fuel_efficiencies::calculate_fuel_efficiencies));
+
+    let accident_routes = Router::new()
+        .route("/", post(accidents::create_accident).get(accidents::get_accidents))
+        .route("/:id", get(accidents::get_accident).put(accidents::update_accident).delete(accidents::delete_accident));
+
+    let periodic_inspection_routes = Router::new()
+        .route("/", post(periodic_inspections::create_periodic_inspection).get(periodic_inspections::get_periodic_inspections))
+        .route("/:id", get(periodic_inspections::get_periodic_inspection).put(periodic_inspections::update_periodic_inspection).delete(periodic_inspections::delete_periodic_inspection));
+
+    let image_routes = Router::new().route("/", post(images::upload_image));
+
+    let private_routes = Router::new()
+        .nest("/users", user_routes)
+        .nest("/cars", car_routes)
+        .nest("/tunings", tuning_routes)
+        .nest("/maintenances", maintenance_routes)
+        .nest("/fuel_efficiencies", fuel_efficiency_routes)
+        .nest("/accidents", accident_routes)
+        .nest("/periodic_inspections", periodic_inspection_routes)
+        .nest("/images", image_routes)
+        .layer(from_fn_with_state(
+            Arc::clone(&state),
+            jwt_auth,
+        ));
+
     Router::new()
-        .route("/", get(|| async { "Hello, world!!" }).post(|| async { "Hello, world!!" }))
-        .route("/users", post(create_user).get(get_users))
-        .route("/users/:id", get(get_user).put(update_user).delete(delete_user))
-        .route("/users/:user_id/cars", get(get_user_cars))
-        .route("/cars", post(create_car).get(get_cars))
-        .route("/cars/:id", get(get_car).put(update_car).delete(delete_car))
-        .route("/cars/:id/image", put(update_car_image))
-        .route("/tunings", post(create_tuning).get(get_tunings))
-        .route("/tunings/:id", get(get_tuning).put(update_tuning).delete(delete_tuning))
-        .route("/maintenances", post(create_maintenance).get(get_maintenances))
-        .route("/maintenances/:id", get(get_maintenance).put(update_maintenance).delete(delete_maintenance))
-        .route("/fuel_efficiencies", post(create_fuel_efficiency).get(get_fuel_efficiencies))
-        .route("/fuel_efficiencies/:id", get(get_fuel_efficiency).put(update_fuel_efficiency).delete(delete_fuel_efficiency))
-        .route("/cars/:car_id/fuel_efficiencies/calculate", get(calculate_fuel_efficiencies))
-        .route("/accidents", post(create_accident).get(get_accidents))
-        .route("/accidents/:id", get(get_accident).put(update_accident).delete(delete_accident))
-        .route("/periodic_inspections", post(create_periodic_inspection).get(get_periodic_inspections))
-        .route("/periodic_inspections/:id", get(get_periodic_inspection).put(update_periodic_inspection).delete(delete_periodic_inspection))
-        .route("/images", post(upload_image))
-        .layer(axum::Extension(state))
-        .layer(ServiceBuilder::new().layer(DefaultBodyLimit::max(100 * 1024 * 1024))) // 100MBのボディサイズ制限
+        .nest("/", private_routes)
+        .with_state(state.clone())
+        .layer(
+            TraceLayer::new_for_http()
+                .make_span_with(DefaultMakeSpan::new().level(Level::INFO))
+                .on_request(DefaultOnRequest::new().level(Level::INFO))
+                .on_response(DefaultOnResponse::new().level(Level::INFO)),
+        )
+        .layer(
+            CorsLayer::new()
+                .allow_headers([header::AUTHORIZATION, header::CONTENT_TYPE])
+                .expose_headers([header::CONTENT_DISPOSITION])
+                .allow_methods([Method::GET, Method::PUT, Method::POST, Method::DELETE])
+                .allow_origin(Any),
+        )
+        .layer(DefaultBodyLimit::max(100 * 1024 * 1024)) // 100MBのボディサイズ制限
+}
+
+struct SecurityAddon;
+
+impl Modify for SecurityAddon {
+    fn modify(&self, openapi: &mut utoipa::openapi::OpenApi) {
+        let Some(schema) = openapi.components.as_mut() else {
+            return;
+        };
+        schema.add_security_scheme(
+            "jwt_token",
+            SecurityScheme::Http(
+                HttpBuilder::new()
+                    .scheme(HttpAuthScheme::Bearer)
+                    .bearer_format("JWT")
+                    .build(),
+            ),
+        );
+    }
 }

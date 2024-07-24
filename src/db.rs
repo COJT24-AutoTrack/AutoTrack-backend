@@ -2,11 +2,6 @@ use sqlx::mysql::MySqlPoolOptions;
 use sqlx::MySqlPool;
 use std::env;
 
-#[derive(Clone)]
-pub struct AppState {
-    pub db_pool: MySqlPool,
-}
-
 pub async fn establish_connection() -> MySqlPool {
     let db_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     MySqlPoolOptions::new()

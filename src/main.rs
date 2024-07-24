@@ -1,12 +1,16 @@
-use axum;
-use tokio::sync::Mutex;
-use std::sync::Arc;
-use tracing_subscriber::EnvFilter;
-
 mod db;
 mod handlers;
 mod models;
 mod routes;
+mod middleware;
+mod state;
+
+use axum;
+use tokio::sync::Mutex;
+use std::sync::Arc;
+use tracing_subscriber::EnvFilter;
+use state::AppState;
+use std::env;
 
 #[tokio::main]
 async fn main() {
@@ -20,7 +24,14 @@ async fn main() {
 
     let db_pool = db::establish_connection().await;
 
-    let state = Arc::new(Mutex::new(db::AppState { db_pool }));
+    let state = Arc::new(Mutex::new(AppState {
+        db_pool,
+        firebase_project_id: env::var("FIREBASE_PROJECT_ID").expect("FIREBASE_PROJECT_ID must be set"),
+        require_email_verification: env::var("REQUIRE_EMAIL_VERIFICATION")
+            .unwrap_or_else(|_| "true".to_string())
+            .parse()
+            .expect("REQUIRE_EMAIL_VERIFICATION must be a boolean"),
+    }));
 
     let app = routes::create_routes(state);
 

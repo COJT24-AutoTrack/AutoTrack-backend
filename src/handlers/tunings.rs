@@ -6,7 +6,7 @@ use axum::{
 use sqlx::{query, query_as};
 use tokio::sync::Mutex;
 use std::sync::Arc;
-use crate::db::AppState;
+use crate::state::AppState;
 use crate::models::tuning::Tuning;
 
 pub async fn create_tuning(

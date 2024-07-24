@@ -6,7 +6,7 @@ use axum::{
 use sqlx::{query_as, query};
 use tokio::sync::Mutex;
 use std::sync::Arc;
-use crate::db::AppState;
+use crate::state::AppState;
 use crate::models::accident::Accident;
 
 pub async fn create_accident(
