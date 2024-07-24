@@ -2,6 +2,7 @@ use axum::{
     Router, routing::get, routing::post, routing::put,
     extract::DefaultBodyLimit,
     middleware::from_fn_with_state,
+    Extension,
 };
 use std::sync::Arc;
 use tokio::sync::Mutex;
@@ -17,6 +18,13 @@ use crate::handlers::{
     accidents, cars, fuel_efficiencies, images, maintenances, periodic_inspections, tunings, users,
 };
 use crate::middleware::auth::jwt_auth;
+
+use axum::Json;
+use serde_json::json;
+
+pub async fn test() -> Json<serde_json::Value> {
+    Json(json!({ "message": "Hello World!!" }))
+}
 
 pub fn create_routes(state: Arc<Mutex<AppState>>) -> Router {
     let user_routes = Router::new()
@@ -50,7 +58,12 @@ pub fn create_routes(state: Arc<Mutex<AppState>>) -> Router {
         .route("/", post(periodic_inspections::create_periodic_inspection).get(periodic_inspections::get_periodic_inspections))
         .route("/:id", get(periodic_inspections::get_periodic_inspection).put(periodic_inspections::update_periodic_inspection).delete(periodic_inspections::delete_periodic_inspection));
 
+    let test_routes = Router::new().route("/", get(test));
+
     let image_routes = Router::new().route("/", post(images::upload_image));
+
+    let public_routes = Router::new()
+        .route("/test", get(test));
 
     let private_routes = Router::new()
         .nest("/users", user_routes)
@@ -61,13 +74,15 @@ pub fn create_routes(state: Arc<Mutex<AppState>>) -> Router {
         .nest("/accidents", accident_routes)
         .nest("/periodic_inspections", periodic_inspection_routes)
         .nest("/images", image_routes)
+        .nest("/test", test_routes)
         .layer(from_fn_with_state(
             Arc::clone(&state),
             jwt_auth,
         ));
 
     Router::new()
-        .nest("/", private_routes)
+        .merge(public_routes)
+        .nest("/api", private_routes)
         .with_state(state.clone())
         .layer(
             TraceLayer::new_for_http()
@@ -83,6 +98,7 @@ pub fn create_routes(state: Arc<Mutex<AppState>>) -> Router {
                 .allow_origin(Any),
         )
         .layer(DefaultBodyLimit::max(100 * 1024 * 1024)) // 100MBのボディサイズ制限
+        .layer(Extension(state))
 }
 
 struct SecurityAddon;
