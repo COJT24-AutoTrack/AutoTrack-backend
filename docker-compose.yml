@@ -12,6 +12,9 @@ services:
       - "8369:8369"
     environment:
       DATABASE_URL: mysql://user:password@db:3306/auto_track-db
+      FIREBASE_PROJECT_ID: autotrack-23a9e
+    env_file:
+      - .env
     networks:
       - auto_track-network
 
