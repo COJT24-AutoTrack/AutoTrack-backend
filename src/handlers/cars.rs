@@ -248,6 +248,28 @@ pub async fn update_car_image(
         }
     }
 }
+pub async fn delete_car_image(
+    Extension(state): Extension<Arc<Mutex<AppState>>>,
+    Path(car_id): Path<i32>
+) -> impl IntoResponse {
+    let db_pool = state.lock().await.db_pool.clone();
+
+    let result = query!(
+        "UPDATE Cars SET car_image_url = NULL WHERE car_id = ?",
+        car_id
+    )
+    .execute(&db_pool)
+    .await;
+
+    match result {
+        Ok(_) => (StatusCode::OK, "Car image URL deleted successfully").into_response(),
+        Err(e) => {
+            eprintln!("Failed to delete car image URL: {:?}", e);
+            StatusCode::INTERNAL_SERVER_ERROR.into_response()
+        }
+    }
+}
+
 
 pub async fn get_user_cars(
     Extension(state): Extension<Arc<Mutex<AppState>>>,

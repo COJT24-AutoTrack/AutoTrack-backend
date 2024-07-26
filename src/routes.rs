@@ -35,11 +35,10 @@ pub fn create_routes(state: Arc<Mutex<AppState>>) -> Router {
     let car_routes = Router::new()
         .route("/", post(cars::create_car).get(cars::get_cars))
         .route("/:car_id", get(cars::get_car).put(cars::update_car).delete(cars::delete_car))
-        .route("/:car_id/image", put(cars::update_car_image))
+        .route("/:car_id/image", put(cars::update_car_image).delete(cars::delete_car_image))
         .route("/:car_id/tuning", get(cars::get_car_tuning))
         .route("/:car_id/maintenance", get(cars::get_car_maintenance))
         .route("/:car_id/fuel_efficiency", get(cars::get_car_fuel_efficiency));
-
 
     let tuning_routes = Router::new()
         .route("/", post(tunings::create_tuning).get(tunings::get_tunings))
@@ -51,16 +50,16 @@ pub fn create_routes(state: Arc<Mutex<AppState>>) -> Router {
 
     let fuel_efficiency_routes = Router::new()
         .route("/", post(fuel_efficiencies::create_fuel_efficiency).get(fuel_efficiencies::get_fuel_efficiencies))
-        .route("/:id", get(fuel_efficiencies::get_fuel_efficiency).put(fuel_efficiencies::update_fuel_efficiency).delete(fuel_efficiencies::delete_fuel_efficiency))
+        .route("/:fe_id", get(fuel_efficiencies::get_fuel_efficiency).put(fuel_efficiencies::update_fuel_efficiency).delete(fuel_efficiencies::delete_fuel_efficiency))
         .route("/:car_id/fuel_efficiencies/calculate", get(fuel_efficiencies::calculate_fuel_efficiencies));
 
     let accident_routes = Router::new()
         .route("/", post(accidents::create_accident).get(accidents::get_accidents))
-        .route("/:id", get(accidents::get_accident).put(accidents::update_accident).delete(accidents::delete_accident));
+        .route("/:accident_id", get(accidents::get_accident).put(accidents::update_accident).delete(accidents::delete_accident));
 
     let periodic_inspection_routes = Router::new()
         .route("/", post(periodic_inspections::create_periodic_inspection).get(periodic_inspections::get_periodic_inspections))
-        .route("/:id", get(periodic_inspections::get_periodic_inspection).put(periodic_inspections::update_periodic_inspection).delete(periodic_inspections::delete_periodic_inspection));
+        .route("/:pi_id", get(periodic_inspections::get_periodic_inspection).put(periodic_inspections::update_periodic_inspection).delete(periodic_inspections::delete_periodic_inspection));
 
     let test_routes = Router::new().route("/", get(test));
 

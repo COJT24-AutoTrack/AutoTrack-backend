@@ -68,11 +68,11 @@ pub async fn get_periodic_inspections(
 
 pub async fn get_periodic_inspection(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(id): Path<i32>
+    Path(pi_id): Path<i32>
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query_as!(PeriodicInspection, "SELECT * FROM PeriodicInspection WHERE pi_id = ?", id)
+    match query_as!(PeriodicInspection, "SELECT * FROM PeriodicInspection WHERE pi_id = ?", pi_id)
         .fetch_one(&db_pool)
         .await
     {
@@ -86,7 +86,7 @@ pub async fn get_periodic_inspection(
 
 pub async fn update_periodic_inspection(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(id): Path<i32>,
+    Path(pi_id): Path<i32>,
     Json(updated_periodic_inspection): Json<PeriodicInspection>
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
@@ -97,7 +97,7 @@ pub async fn update_periodic_inspection(
         updated_periodic_inspection.pi_name,
         updated_periodic_inspection.pi_date,
         updated_periodic_inspection.pi_nextdate,
-        id
+        pi_id
     )
     .execute(&db_pool)
     .await
@@ -106,7 +106,7 @@ pub async fn update_periodic_inspection(
             match query_as!(
                 PeriodicInspection,
                 "SELECT pi_id, car_id, pi_name, pi_date, pi_nextdate, created_at, updated_at FROM PeriodicInspection WHERE pi_id = ?",
-                id
+                pi_id
             )
             .fetch_one(&db_pool)
             .await
@@ -128,11 +128,11 @@ pub async fn update_periodic_inspection(
 
 pub async fn delete_periodic_inspection(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(id): Path<i32>
+    Path(pi_id): Path<i32>
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query!("DELETE FROM PeriodicInspection WHERE pi_id = ?", id)
+    match query!("DELETE FROM PeriodicInspection WHERE pi_id = ?", pi_id)
         .execute(&db_pool)
         .await
     {
