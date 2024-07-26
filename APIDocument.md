@@ -2,22 +2,28 @@
 
 ## Overview
 
-This API provides endpoints for managing users, cars, tunings, maintenances, fuel efficiencies, accidents, and periodic inspections. Each resource has its own set of endpoints for CRUD operations. The base URL for all endpoints is ~`http://your-domain.com`~.
+This API provides endpoints for managing users, cars, tunings, maintenances, fuel efficiencies, accidents, and periodic inspections. Each resource has its own set of endpoints for CRUD operations. The base URL for all private endpoints is `http://your-domain.com`.
 
 ## Authentication
 
-Currently, this API does not include authentication. Ensure that your API server is secure if deployed in a production environment.
+All private routes are protected by Firebase Authentication. Clients must include a valid JWT token in the Authorization header for these requests.
 
 ## Endpoints
 
-### Root
+### Test
 
-- `GET /`: Returns a "Hello, world!" message.
-- `POST /`: Returns a "Hello, world!" message.
+- `GET /test`: Test the api endpoints. <strong>This endpoint does not require a bearer token.</strong>
+
+  - Response:
+
+    ```json
+    {
+      "message": "Hello World!"
+    ```
 
 ### Users
 
-- `POST /users`: Create a new user.
+- `POST /api/users`: Create a new user.
   - Request Body:
 
     ```json
@@ -41,7 +47,7 @@ Currently, this API does not include authentication. Ensure that your API server
     }
     ```
 
-- `GET /users`: Get all users.
+- `GET /api/users`: Get all users.
   - Response:
 
     ```json
@@ -59,8 +65,8 @@ Currently, this API does not include authentication. Ensure that your API server
     ]
     ```
 
-- `GET /users/:id`: Get a user by ID.
-  - Path Parameters: `id` - User ID.
+- `GET /api/users/:user_id`: Get a user by ID.
+  - Path Parameters: `user_id` - User ID.
   - Response:
 
     ```json
@@ -74,8 +80,8 @@ Currently, this API does not include authentication. Ensure that your API server
     }
     ```
 
-- `PUT /users/:id`: Update a user by ID.
-  - Path Parameters: `id` - User ID.
+- `PUT /api/users/:user_id`: Update a user by ID.
+  - Path Parameters: `user_id` - User ID.
   - Request Body:
 
     ```json
@@ -99,33 +105,11 @@ Currently, this API does not include authentication. Ensure that your API server
     }
     ```
 
-- `DELETE /users/:id`: Delete a user by ID.
-  - Path Parameters: `id` - User ID.
+- `DELETE /api/users/:user_id`: Delete a user by ID.
+  - Path Parameters: `user_id` - User ID.
   - Response: Status code indicating success or failure.
 
-- `GET /users/:user_id/cars`: Get all cars associated with a user.
-  - Path Parameters: `user_id` - User ID.
-  - Response:
-
-    ```json
-    [
-      {
-        "car_id": 1,
-        "car_name": "Toyota Prius",
-        "carmodelnum": "X123",
-        "car_color": "Blue",
-        "car_mileage": 10000,
-        "car_isflooding": false,
-        "car_issmoked": false,
-        "car_image_url": "http://example.com/image.jpg",
-        "created_at": "2023-06-21T10:20:30Z",
-        "updated_at": "2023-06-21T10:20:30Z"
-      },
-      ...
-    ]
-    ```
-
-- `GET /users/:user_id/cars`: Get all cars associated with a user.
+- `GET /api/users/:user_id/cars`: Get all cars associated with a user.
   - Path Parameters: `user_id` - User ID.
   - Response:
 
@@ -160,7 +144,7 @@ Currently, this API does not include authentication. Ensure that your API server
 
 ### Cars
 
-- `POST /cars`: Create a new car.
+- `POST /api/cars`: Create a new car.
   - Request Body:
 
     ```json
@@ -193,7 +177,7 @@ Currently, this API does not include authentication. Ensure that your API server
     }
     ```
 
-- `GET /cars`: Get all cars.
+- `GET /api/cars`: Get all cars.
   - Response:
 
     ```json
@@ -213,8 +197,8 @@ Currently, this API does not include authentication. Ensure that your API server
     ]
     ```
 
-- `GET /cars/:id`: Get a car by ID.
-  - Path Parameters: `id` - Car ID.
+- `GET /api/cars/:car_id`: Get a car by ID.
+  - Path Parameters: `car_id` - Car ID.
   - Response:
 
     ```json
@@ -231,8 +215,8 @@ Currently, this API does not include authentication. Ensure that your API server
     }
     ```
 
-- `PUT /cars/:id`: Update a car by ID.
-  - Path Parameters: `id` - Car ID.
+- `PUT /api/cars/:car_id`: Update a car by ID.
+  - Path Parameters: `car_id` - Car ID.
   - Request Body:
 
     ```json
@@ -262,12 +246,12 @@ Currently, this API does not include authentication. Ensure that your API server
     }
     ```
 
-- `DELETE /cars/:id`: Delete a car by ID.
-  - Path Parameters: `id` - Car ID.
+- `DELETE /api/cars/:car_id`: Delete a car by ID.
+  - Path Parameters: `car_id` - Car ID.
   - Response: Status code indicating success or failure.
 
-- `PUT /cars/:id/image`: Update car image by ID.
-  - Path Parameters: `id` - Car ID.
+- `PUT /api/cars/:car_id/image`: Update car image by ID.
+  - Path Parameters: `car_id` - Car ID.
   - Request Body:
 
     ```json
@@ -293,8 +277,12 @@ Currently, this API does not include authentication. Ensure that your API server
     }
     ```
 
-- `GET /cars/:car_id/tuning`: Get all tunings for a specific car associated with a user.
-  - Path Parameters: `user_id` - User ID, `car_id` - Car ID.
+- `DELETE /api/cars/:car_id/image`: Delete car image by ID.
+  - Path Parameters: `car_id` - Car ID.
+  - Response: Status code indicating success or failure.
+
+- `GET /api/cars/:car_id/tuning`: Get car tuning details by ID.
+  - Path Parameters: `car_id` - Car ID.
   - Response:
 
     ```json
@@ -302,17 +290,27 @@ Currently, this API does not include authentication. Ensure that your API server
       {
         "tuning_id": 1,
         "car_id": 1,
-        "tuning_name": "Engine Overhaul",
-        "tuning_date": "2023-06-20",
-        "tuning_description": "Complete engine overhaul.",
+        "tuning_name": "Engine Tuning",
+        "tuning_date": "2023-06-21",
+        "tuning_description": "Detailed description of the tuning",
         "created_at": "2023-06-21T10:20:30Z",
         "updated_at": "2023-06-21T10:20:30Z"
-      }
+      },
+      {
+        "tuning_id": 2,
+        "car_id": 1,
+        "tuning_name": "Suspension Tuning",
+        "tuning_date": "2023-07-01",
+        "tuning_description": "Detailed description of the tuning",
+        "created_at": "2023-07-01T10:20:30Z",
+        "updated_at": "2023-07-01T10:20:30Z"
+      },
+      ...
     ]
     ```
 
-- `GET /cars/:car_id/maintenance`: Get all maintenances for a specific car associated with a user.
-  - Path Parameters: `user_id` - User ID, `car_id` - Car ID.
+- `GET /api/cars/:car_id/maintenance`: Get car maintenance details by ID.
+  - Path Parameters: `car_id` - Car ID.
   - Response:
 
     ```json
@@ -321,16 +319,26 @@ Currently, this API does not include authentication. Ensure that your API server
         "maint_id": 1,
         "car_id": 1,
         "maint_type": "Oil Change",
-        "maint_date": "2023-06-20",
-        "maint_description": "Changed the oil.",
+        "maint_date": "2023-06-21",
+        "maint_description": "Changed engine oil",
         "created_at": "2023-06-21T10:20:30Z",
         "updated_at": "2023-06-21T10:20:30Z"
-      }
+      },
+      {
+        "maint_id": 2,
+        "car_id": 1,
+        "maint_type": "Brake Inspection",
+        "maint_date": "2023-07-01",
+        "maint_description": "Inspected and replaced brake pads",
+        "created_at": "2023-07-01T10:20:30Z",
+        "updated_at": "2023-07-01T10:20:30Z"
+      },
+      ...
     ]
     ```
 
-- `GET /cars/:car_id/fuel_efficiency`: Get all fuel efficiencies for a specific car associated with a user.
-  - Path Parameters: `user_id` - User ID, `car_id` - Car ID.
+- `GET /api/cars/:car_id/fuel_efficiency`: Get car fuel efficiency details by ID.
+  - Path Parameters: `car_id` - Car ID.
   - Response:
 
     ```json
@@ -338,29 +346,53 @@ Currently, this API does not include authentication. Ensure that your API server
       {
         "fe_id": 1,
         "car_id": 1,
-        "fe_date": "2023-07-01",
-        "fe_amount": 10,
-        "fe_unitprice": 150,
-        "fe_mileage": 10,
-        "created_at": "2023-07-01",
-        "updated_at": "2023-07-01"
+        "fe_date": "2023-06-21",
+        "fe_amount": 40.5,
+        "fe_unitprice": 1.2,
+        "fe_mileage": 500,
+        "created_at": "2023-06-21T10:20:30Z",
+        "updated_at": "2023-06-21T10:20:30Z"
       },
       {
         "fe_id": 2,
         "car_id": 1,
-        "fe_date": "2023-07-02",
-        "fe_amount": 20,
-        "fe_unitprice": 140,
-        "fe_mileage": 20,
-        "created_at": "2023-07-02",
-        "updated_at": "2023-07-02"
-      }
+        "fe_date": "2023-07-01",
+        "fe_amount": 45.0,
+        "fe_unitprice": 1.25,
+        "fe_mileage": 550,
+        "created_at": "2023-07-01T10:20:30Z",
+        "updated_at": "2023-07-01T10:20:30Z"
+      },
+      ...
     ]
     ```
 
+- `GET /api/cars/:car_id/fuel_efficiencies/calculate`: Calculate and get the fuel efficiency for a specific car.
+  - Path Parameters: `car_id` - Car ID.
+  - Response:
+
+    ```json
+    {
+      "car_id": 1,
+      "total_fuel_efficiency": 8.6,
+      "fuel_efficiencies": [
+        {
+          "fe_id": 1,
+          "fuel_efficiency": 8.6
+        },
+        {
+          "fe_id": 2,
+          "fuel_efficiency": 9.0
+        },
+        ...
+      ]
+    }
+    ```
+
+
 ### Tunings
 
-- `POST /tunings`: Create a new tuning.
+- `POST /api/tunings`: Create a new tuning.
   - Request Body:
 
     ```json
@@ -386,7 +418,7 @@ Currently, this API does not include authentication. Ensure that your API server
     }
     ```
 
-- `GET /tunings`: Get all tunings.
+- `GET /api/tunings`: Get all tunings.
   - Response:
 
     ```json
@@ -404,8 +436,8 @@ Currently, this API does not include authentication. Ensure that your API server
     ]
     ```
 
-- `GET /tunings/:id`: Get a tuning by ID.
-  - Path Parameters: `id` - Tuning ID.
+- `GET /api/tunings/:tuning_id`: Get a tuning by ID.
+  - Path Parameters: `tuning_id` - Tuning ID.
   - Response:
 
     ```json
@@ -420,8 +452,8 @@ Currently, this API does not include authentication. Ensure that your API server
     }
     ```
 
-- `PUT /tunings/:id`: Update a tuning by ID.
-  - Path Parameters: `id` - Tuning ID.
+- `PUT /api/tunings/:tuning_id`: Update a tuning by ID.
+  - Path Parameters: `tuning_id` - Tuning ID.
   - Request Body:
 
     ```json
@@ -447,13 +479,13 @@ Currently, this API does not include authentication. Ensure that your API server
     }
     ```
 
-- `DELETE /tunings/:id`: Delete a tuning by ID.
-  - Path Parameters: `id` - Tuning ID.
+- `DELETE /api/tunings/:tuning_id`: Delete a tuning by ID.
+  - Path Parameters: `tuning_id` - Tuning ID.
   - Response: Status code indicating success or failure.
 
 ### Maintenances
 
-- `POST /maintenances`: Create a new maintenance.
+- `POST /api/maintenances`: Create a new maintenance.
   - Request Body:
 
     ```json
@@ -479,7 +511,7 @@ Currently, this API does not include authentication. Ensure that your API server
     }
     ```
 
-- `GET /maintenances`: Get all maintenances.
+- `GET /api/maintenances`: Get all maintenances.
   - Response:
 
     ```json
@@ -497,8 +529,8 @@ Currently, this API does not include authentication. Ensure that your API server
     ]
     ```
 
-- `GET /maintenances/:id`: Get a maintenance by ID.
-  - Path Parameters: `id` - Maintenance ID.
+- `GET /api/maintenances/:maint_id`: Get a maintenance by ID.
+  - Path Parameters: `maint_id` - Maintenance ID.
   - Response:
 
     ```json
@@ -513,8 +545,8 @@ Currently, this API does not include authentication. Ensure that your API server
     }
     ```
 
-- `PUT /maintenances/:id`: Update a maintenance by ID.
-  - Path Parameters: `id` - Maintenance ID.
+- `PUT /api/maintenances/:maint_id`: Update a maintenance by ID.
+  - Path Parameters: `maint_id` - Maintenance ID.
   - Request Body:
 
     ```json
@@ -540,13 +572,13 @@ Currently, this API does not include authentication. Ensure that your API server
     }
     ```
 
-- `DELETE /maintenances/:id`: Delete a maintenance by ID.
-  - Path Parameters: `id` - Maintenance ID.
+- `DELETE /api/maintenances/:maint_id`: Delete a maintenance by ID.
+  - Path Parameters: `maint_id` - Maintenance ID.
   - Response: Status code indicating success or failure.
 
 ### Fuel Efficiencies
 
-- `POST /fuel_efficiencies`: Create a new fuel efficiency record.
+- `POST /api/fuel_efficiencies`: Create a new fuel efficiency record.
   - Request Body:
 
     ```json
@@ -574,7 +606,7 @@ Currently, this API does not include authentication. Ensure that your API server
     }
     ```
 
-- `GET /fuel_efficiencies`: Get all fuel efficiency records.
+- `GET /api/fuel_efficiencies`: Get all fuel efficiency records.
   - Response:
 
     ```json
@@ -593,8 +625,8 @@ Currently, this API does not include authentication. Ensure that your API server
     ]
     ```
 
-- `GET /fuel_efficiencies/:id`: Get a fuel efficiency record by ID.
-  - Path Parameters: `id` - Fuel Efficiency ID.
+- `GET /api/fuel_efficiencies/:fe_id`: Get a fuel efficiency record by ID.
+  - Path Parameters: `fe_id` - Fuel Efficiency ID.
   - Response:
 
     ```json
@@ -610,8 +642,8 @@ Currently, this API does not include authentication. Ensure that your API server
     }
     ```
 
-- `PUT /fuel_efficiencies/:id`: Update a fuel efficiency record by ID.
-  - Path Parameters: `id` - Fuel Efficiency ID.
+- `PUT /api/fuel_efficiencies/:fe_id`: Update a fuel efficiency record by ID.
+  - Path Parameters: `fe_id` - Fuel Efficiency ID.
   - Request Body:
 
     ```json
@@ -639,35 +671,13 @@ Currently, this API does not include authentication. Ensure that your API server
     }
     ```
 
-- `DELETE /fuel_efficiencies/:id`: Delete a fuel efficiency record by ID.
-  - Path Parameters: `id` - Fuel Efficiency ID.
+- `DELETE /api/fuel_efficiencies/:fe_id`: Delete a fuel efficiency record by ID.
+  - Path Parameters: `fe_id` - Fuel Efficiency ID.
   - Response: Status code indicating success or failure.
-
-- `GET /cars/:car_id/fuel_efficiencies/calculate`: Calculate and get the fuel efficiency for a specific car.
-  - Path Parameters: `car_id` - Car ID.
-  - Response:
-  
-    ```json
-    {
-      "car_id": 1,
-      "total_fuel_efficiency": 8.6,
-      "fuel_efficiencies": [
-        {
-          "fe_id": 1,
-          "fuel_efficiency": 8.6
-        },
-        {
-          "fe_id": 2,
-          "fuel_efficiency": 9.0
-        },
-        ...
-      ]
-    }
-    ```
 
 ### Accidents
 
-- `POST /accidents`: Create a new accident record.
+- `POST /api/accidents`: Create a new accident record.
   - Request Body:
 
     ```json
@@ -691,7 +701,7 @@ Currently, this API does not include authentication. Ensure that your API server
     }
     ```
 
-- `GET /accidents`: Get all accident records.
+- `GET /api/accidents`: Get all accident records.
   - Response:
 
     ```json
@@ -708,8 +718,8 @@ Currently, this API does not include authentication. Ensure that your API server
     ]
     ```
 
-- `GET /accidents/:id`: Get an accident record by ID.
-  - Path Parameters: `id` - Accident ID.
+- `GET /api/accidents/:accident_id`: Get an accident record by ID.
+  - Path Parameters: `accident_id` - Accident ID.
   - Response:
 
     ```json
@@ -723,8 +733,8 @@ Currently, this API does not include authentication. Ensure that your API server
     }
     ```
 
-- `PUT /accidents/:id`: Update an accident record by ID.
-  - Path Parameters: `id` - Accident ID.
+- `PUT /api/accidents/:accident_id`: Update an accident record by ID.
+  - Path Parameters: `accident_id` - Accident ID.
   - Request Body:
 
     ```json
@@ -748,13 +758,13 @@ Currently, this API does not include authentication. Ensure that your API server
     }
     ```
 
-- `DELETE /accidents/:id`: Delete an accident record by ID.
-  - Path Parameters: `id` - Accident ID.
+- `DELETE /api/accidents/:accident_id`: Delete an accident record by ID.
+  - Path Parameters: `accident_id` - Accident ID.
   - Response: Status code indicating success or failure.
 
 ### Periodic Inspections
 
-- `POST /periodic_inspections`: Create a new periodic inspection record.
+- `POST /api/periodic_inspections`: Create a new periodic inspection record.
   - Request Body:
 
     ```json
@@ -780,7 +790,7 @@ Currently, this API does not include authentication. Ensure that your API server
     }
     ```
 
-- `GET /periodic_inspections`: Get all periodic inspection records.
+- `GET /api/periodic_inspections`: Get all periodic inspection records.
   - Response:
 
     ```json
@@ -798,8 +808,8 @@ Currently, this API does not include authentication. Ensure that your API server
     ]
     ```
 
-- `GET /periodic_inspections/:id`: Get a periodic inspection record by ID.
-  - Path Parameters: `id` - Periodic Inspection ID.
+- `GET /api/periodic_inspections/:pi_id`: Get a periodic inspection record by ID.
+  - Path Parameters: `pi_id` - Periodic Inspection ID.
   - Response:
 
     ```json
@@ -814,8 +824,8 @@ Currently, this API does not include authentication. Ensure that your API server
     }
     ```
 
-- `PUT /periodic_inspections/:id`: Update a periodic inspection record by ID.
-  - Path Parameters: `id` - Periodic Inspection ID.
+- `PUT /api/periodic_inspections/:pi_id`: Update a periodic inspection record by ID.
+  - Path Parameters: `pi_id` - Periodic Inspection ID.
   - Request Body:
 
     ```json
@@ -841,8 +851,8 @@ Currently, this API does not include authentication. Ensure that your API server
     }
     ```
 
-- `DELETE /periodic_inspections/:id`: Delete a periodic inspection record by ID.
-  - Path Parameters: `id` - Periodic Inspection ID.
+- `DELETE /api/periodic_inspections/:pi_id`: Delete a periodic inspection record by ID.
+  - Path Parameters: `pi_id` - Periodic Inspection ID.
   - Response: Status code indicating success or failure.
 
 ### Images
@@ -852,7 +862,7 @@ Currently, this API does not include authentication. Ensure that your API server
   - example
 
     ```sh
-    curl -X POST http://localhost:8369/images -F "file=@{filename}"
+    curl -X POST http://localhost:8369/images -F "file=@{pathOfFile}"
     ```
 
 ## Models
