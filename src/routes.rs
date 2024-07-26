@@ -29,21 +29,25 @@ pub async fn test() -> Json<serde_json::Value> {
 pub fn create_routes(state: Arc<Mutex<AppState>>) -> Router {
     let user_routes = Router::new()
         .route("/", post(users::create_user).get(users::get_users))
-        .route("/:id", get(users::get_user).put(users::update_user).delete(users::delete_user))
+        .route("/:user_id", get(users::get_user).put(users::update_user).delete(users::delete_user))
         .route("/:user_id/cars", get(cars::get_user_cars));
 
     let car_routes = Router::new()
         .route("/", post(cars::create_car).get(cars::get_cars))
-        .route("/:id", get(cars::get_car).put(cars::update_car).delete(cars::delete_car))
-        .route("/:id/image", put(cars::update_car_image));
+        .route("/:car_id", get(cars::get_car).put(cars::update_car).delete(cars::delete_car))
+        .route("/:car_id/image", put(cars::update_car_image))
+        .route("/:car_id/tuning", get(cars::get_car_tuning))
+        .route("/:car_id/maintenance", get(cars::get_car_maintenance))
+        .route("/:car_id/fuel_efficiency", get(cars::get_car_fuel_efficiency));
+
 
     let tuning_routes = Router::new()
         .route("/", post(tunings::create_tuning).get(tunings::get_tunings))
-        .route("/:id", get(tunings::get_tuning).put(tunings::update_tuning).delete(tunings::delete_tuning));
+        .route("/:tuning_id", get(tunings::get_tuning).put(tunings::update_tuning).delete(tunings::delete_tuning));
 
     let maintenance_routes = Router::new()
         .route("/", post(maintenances::create_maintenance).get(maintenances::get_maintenances))
-        .route("/:id", get(maintenances::get_maintenance).put(maintenances::update_maintenance).delete(maintenances::delete_maintenance));
+        .route("/:maint_id", get(maintenances::get_maintenance).put(maintenances::update_maintenance).delete(maintenances::delete_maintenance));
 
     let fuel_efficiency_routes = Router::new()
         .route("/", post(fuel_efficiencies::create_fuel_efficiency).get(fuel_efficiencies::get_fuel_efficiencies))

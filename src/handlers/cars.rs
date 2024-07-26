@@ -8,6 +8,9 @@ use tokio::sync::Mutex;
 use std::sync::Arc;
 use crate::state::AppState;
 use crate::models::car::Car;
+use crate::models::tuning::Tuning;
+use crate::models::maintenance::Maintenance;
+use crate::models::fuel_efficiency::FuelEfficiency;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -266,6 +269,72 @@ pub async fn get_user_cars(
         Ok(cars) => (StatusCode::OK, Json(cars)).into_response(),
         Err(e) => {
             eprintln!("Failed to fetch user cars: {:?}", e);
+            StatusCode::INTERNAL_SERVER_ERROR.into_response()
+        }
+    }
+}
+
+pub async fn get_car_tuning(
+    Extension(state): Extension<Arc<Mutex<AppState>>>,
+    Path(car_id): Path<i32>
+) -> impl IntoResponse {
+    let db_pool = state.lock().await.db_pool.clone();
+
+    match query_as!(
+        Tuning,
+        "SELECT * FROM Tunings WHERE car_id = ?",
+        car_id
+    )
+    .fetch_all(&db_pool)
+    .await
+    {
+        Ok(tunings) => (StatusCode::OK, Json(tunings)).into_response(),
+        Err(e) => {
+            eprintln!("Failed to fetch car tunings: {:?}", e);
+            StatusCode::INTERNAL_SERVER_ERROR.into_response()
+        }
+    }
+}
+
+pub async fn get_car_maintenance(
+    Extension(state): Extension<Arc<Mutex<AppState>>>,
+    Path(car_id): Path<i32>
+) -> impl IntoResponse {
+    let db_pool = state.lock().await.db_pool.clone();
+
+    match query_as!(
+        Maintenance,
+        "SELECT * FROM Maintenances WHERE car_id = ?",
+        car_id
+    )
+    .fetch_all(&db_pool)
+    .await
+    {
+        Ok(maintenances) => (StatusCode::OK, Json(maintenances)).into_response(),
+        Err(e) => {
+            eprintln!("Failed to fetch maintenances: {:?}", e);
+            StatusCode::INTERNAL_SERVER_ERROR.into_response()
+        }
+    }
+}
+
+pub async fn get_car_fuel_efficiency(
+    Extension(state): Extension<Arc<Mutex<AppState>>>,
+    Path(car_id): Path<i32>
+) -> impl IntoResponse {
+    let db_pool = state.lock().await.db_pool.clone();
+
+    match query_as!(
+        FuelEfficiency,
+        "SELECT * FROM FuelEfficiencies WHERE car_id = ?",
+        car_id
+    )
+    .fetch_all(&db_pool)
+    .await
+    {
+        Ok(fuel_efficiencies) => (StatusCode::OK, Json(fuel_efficiencies)).into_response(),
+        Err(e) => {
+            eprintln!("Failed to fetch fuel efficiencies: {:?}", e);
             StatusCode::INTERNAL_SERVER_ERROR.into_response()
         }
     }

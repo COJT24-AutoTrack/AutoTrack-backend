@@ -158,71 +158,6 @@ Currently, this API does not include authentication. Ensure that your API server
     ]
     ```
 
-- `GET /users/:user_id/cars/:car_id/tuning`: Get all tunings for a specific car associated with a user.
-  - Path Parameters: `user_id` - User ID, `car_id` - Car ID.
-  - Response:
-
-    ```json
-    [
-      {
-        "tuning_id": 1,
-        "car_id": 1,
-        "tuning_name": "Engine Overhaul",
-        "tuning_date": "2023-06-20",
-        "tuning_description": "Complete engine overhaul.",
-        "created_at": "2023-06-21T10:20:30Z",
-        "updated_at": "2023-06-21T10:20:30Z"
-      }
-    ]
-    ```
-
-- `GET /users/:user_id/cars/:car_id/maintenance`: Get all maintenances for a specific car associated with a user.
-  - Path Parameters: `user_id` - User ID, `car_id` - Car ID.
-  - Response:
-
-    ```json
-    [
-      {
-        "maint_id": 1,
-        "car_id": 1,
-        "maint_type": "Oil Change",
-        "maint_date": "2023-06-20",
-        "maint_description": "Changed the oil.",
-        "created_at": "2023-06-21T10:20:30Z",
-        "updated_at": "2023-06-21T10:20:30Z"
-      }
-    ]
-    ```
-
-- `GET /users/:user_id/cars/:car_id/fuel_efficiency`: Get all fuel efficiencies for a specific car associated with a user.
-  - Path Parameters: `user_id` - User ID, `car_id` - Car ID.
-  - Response:
-
-    ```json
-    [
-      {
-        "fe_id": 1,
-        "car_id": 1,
-        "fe_date": "2023-07-01",
-        "fe_amount": 10,
-        "fe_unitprice": 150,
-        "fe_mileage": 10,
-        "created_at": "2023-07-01",
-        "updated_at": "2023-07-01"
-      },
-      {
-        "fe_id": 2,
-        "car_id": 1,
-        "fe_date": "2023-07-02",
-        "fe_amount": 20,
-        "fe_unitprice": 140,
-        "fe_mileage": 20,
-        "created_at": "2023-07-02",
-        "updated_at": "2023-07-02"
-      }
-    ]
-    ```
-
 ### Cars
 
 - `POST /cars`: Create a new car.
@@ -356,6 +291,71 @@ Currently, this API does not include authentication. Ensure that your API server
       "created_at": "2023-06-21T10:20:30Z",
       "updated_at": "2023-06-21T11:00:00Z"
     }
+    ```
+
+- `GET /cars/:car_id/tuning`: Get all tunings for a specific car associated with a user.
+  - Path Parameters: `user_id` - User ID, `car_id` - Car ID.
+  - Response:
+
+    ```json
+    [
+      {
+        "tuning_id": 1,
+        "car_id": 1,
+        "tuning_name": "Engine Overhaul",
+        "tuning_date": "2023-06-20",
+        "tuning_description": "Complete engine overhaul.",
+        "created_at": "2023-06-21T10:20:30Z",
+        "updated_at": "2023-06-21T10:20:30Z"
+      }
+    ]
+    ```
+
+- `GET /cars/:car_id/maintenance`: Get all maintenances for a specific car associated with a user.
+  - Path Parameters: `user_id` - User ID, `car_id` - Car ID.
+  - Response:
+
+    ```json
+    [
+      {
+        "maint_id": 1,
+        "car_id": 1,
+        "maint_type": "Oil Change",
+        "maint_date": "2023-06-20",
+        "maint_description": "Changed the oil.",
+        "created_at": "2023-06-21T10:20:30Z",
+        "updated_at": "2023-06-21T10:20:30Z"
+      }
+    ]
+    ```
+
+- `GET /cars/:car_id/fuel_efficiency`: Get all fuel efficiencies for a specific car associated with a user.
+  - Path Parameters: `user_id` - User ID, `car_id` - Car ID.
+  - Response:
+
+    ```json
+    [
+      {
+        "fe_id": 1,
+        "car_id": 1,
+        "fe_date": "2023-07-01",
+        "fe_amount": 10,
+        "fe_unitprice": 150,
+        "fe_mileage": 10,
+        "created_at": "2023-07-01",
+        "updated_at": "2023-07-01"
+      },
+      {
+        "fe_id": 2,
+        "car_id": 1,
+        "fe_date": "2023-07-02",
+        "fe_amount": 20,
+        "fe_unitprice": 140,
+        "fe_mileage": 20,
+        "created_at": "2023-07-02",
+        "updated_at": "2023-07-02"
+      }
+    ]
     ```
 
 ### Tunings
