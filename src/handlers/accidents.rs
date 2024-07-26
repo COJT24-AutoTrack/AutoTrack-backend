@@ -67,11 +67,11 @@ pub async fn get_accidents(
 
 pub async fn get_accident(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(id): Path<i32>
+    Path(accident_id): Path<i32>
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query_as!(Accident, "SELECT * FROM Accidents WHERE accident_id = ?", id)
+    match query_as!(Accident, "SELECT * FROM Accidents WHERE accident_id = ?", accident_id)
         .fetch_one(&db_pool)
         .await
     {
@@ -85,7 +85,7 @@ pub async fn get_accident(
 
 pub async fn update_accident(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(id): Path<i32>,
+    Path(accident_id): Path<i32>,
     Json(updated_accident): Json<Accident>
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
@@ -95,7 +95,7 @@ pub async fn update_accident(
         updated_accident.car_id,
         updated_accident.accident_date,
         updated_accident.accident_description,
-        id
+        accident_id
     )
     .execute(&db_pool)
     .await
@@ -104,7 +104,7 @@ pub async fn update_accident(
             match query_as!(
                 Accident,
                 "SELECT accident_id, car_id, accident_date, accident_description, created_at, updated_at FROM Accidents WHERE accident_id = ?",
-                id
+                accident_id
             )
             .fetch_one(&db_pool)
             .await
@@ -126,11 +126,11 @@ pub async fn update_accident(
 
 pub async fn delete_accident(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(id): Path<i32>
+    Path(accident_id): Path<i32>
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query!("DELETE FROM Accidents WHERE accident_id = ?", id)
+    match query!("DELETE FROM Accidents WHERE accident_id = ?", accident_id)
         .execute(&db_pool)
         .await
     {
