@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "DELETE FROM Users WHERE firebase_user_id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": []
+  },
+  "hash": "c27c10f0f6f3e7187bcaa14b0b2f8209ab5275401e90a7ea0a3887358b88ab66"
+}

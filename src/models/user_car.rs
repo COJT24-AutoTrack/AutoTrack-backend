@@ -2,6 +2,6 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UserCar {
-    pub user_id: i32,
+    pub firebase_user_id: String,
     pub car_id: i32,
 }

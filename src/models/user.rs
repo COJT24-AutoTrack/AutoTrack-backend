@@ -3,11 +3,10 @@ use time::OffsetDateTime;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct User {
-    pub user_id: Option<i32>,
+    pub firebase_user_id: String,
     pub user_email: String,
     pub user_name: String,
     pub user_password: String,
-    pub firebase_user_id: String,
     pub created_at: Option<OffsetDateTime>,
     pub updated_at: Option<OffsetDateTime>,
 }

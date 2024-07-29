@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "INSERT INTO user_car (firebase_user_id, car_id) VALUES (?, ?)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": []
+  },
+  "hash": "9d146dbd2d61e0530ff0d9be8a8e31f0baa61f4e8f81e0f8ceeaa2e3cada7a0e"
+}

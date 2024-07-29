@@ -1,16 +1,16 @@
 {
   "db_name": "MySQL",
-  "query": "SELECT * FROM Users WHERE user_id = ?",
+  "query": "SELECT * FROM Users WHERE firebase_user_id = ?",
   "describe": {
     "columns": [
       {
         "ordinal": 0,
-        "name": "user_id",
+        "name": "firebase_user_id",
         "type_info": {
-          "type": "Long",
-          "flags": "NOT_NULL | PRIMARY_KEY | AUTO_INCREMENT",
-          "char_set": 63,
-          "max_size": 11
+          "type": "VarString",
+          "flags": "NOT_NULL | PRIMARY_KEY | NO_DEFAULT_VALUE",
+          "char_set": 224,
+          "max_size": 1020
         }
       },
       {
@@ -62,16 +62,6 @@
           "char_set": 63,
           "max_size": 19
         }
-      },
-      {
-        "ordinal": 6,
-        "name": "firebase_user_id",
-        "type_info": {
-          "type": "VarString",
-          "flags": "NOT_NULL | UNIQUE_KEY | NO_DEFAULT_VALUE",
-          "char_set": 224,
-          "max_size": 1020
-        }
       }
     ],
     "parameters": {
@@ -83,9 +73,8 @@
       false,
       false,
       false,
-      false,
       false
     ]
   },
-  "hash": "a1f726481db74e7dc9c72cea9e8804b1609abd8bc649828a565e82bf41bf49ed"
+  "hash": "3fb42a9e23020014b06fff5044f6d829f1f43328a2dc7be50fb4422efda48e65"
 }
