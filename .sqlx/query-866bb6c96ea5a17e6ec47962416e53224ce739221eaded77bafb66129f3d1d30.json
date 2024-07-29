@@ -62,12 +62,23 @@
           "char_set": 63,
           "max_size": 19
         }
+      },
+      {
+        "ordinal": 6,
+        "name": "firebase_user_id",
+        "type_info": {
+          "type": "VarString",
+          "flags": "NOT_NULL | UNIQUE_KEY | NO_DEFAULT_VALUE",
+          "char_set": 224,
+          "max_size": 1020
+        }
       }
     ],
     "parameters": {
       "Right": 0
     },
     "nullable": [
+      false,
       false,
       false,
       false,
