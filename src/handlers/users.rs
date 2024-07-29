@@ -66,11 +66,11 @@ pub async fn get_users(
 
 pub async fn get_user(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(id): Path<i32>
+    Path(firebase_user_id): Path<String>  // firebase_user_id は String 型
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query_as!(User, "SELECT * FROM Users WHERE user_id = ?", id)
+    match query_as!(User, "SELECT * FROM Users WHERE firebase_user_id = ?", firebase_user_id)
         .fetch_one(&db_pool)
         .await
     {
@@ -84,24 +84,24 @@ pub async fn get_user(
 
 pub async fn update_user(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(id): Path<i32>,
+    Path(firebase_user_id): Path<String>,  // firebase_user_id は String 型
     Json(updated_user): Json<User>
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
     match query!(
-        "UPDATE Users SET user_email = ?, user_name = ?, user_password = ?, firebase_user_id = ? WHERE user_id = ?",
+        "UPDATE Users SET user_email = ?, user_name = ?, user_password = ?, firebase_user_id = ? WHERE firebase_user_id = ?",
         updated_user.user_email,
         updated_user.user_name,
         updated_user.user_password,
         updated_user.firebase_user_id,
-        id
+        firebase_user_id
     )
     .execute(&db_pool)
     .await
     {
         Ok(_) => {
-            match query_as!(User, "SELECT * FROM Users WHERE user_id = ?", id)
+            match query_as!(User, "SELECT * FROM Users WHERE firebase_user_id = ?", firebase_user_id)
             .fetch_one(&db_pool)
             .await {
                 Ok(user) => (StatusCode::OK, Json(user)).into_response(),
@@ -120,11 +120,11 @@ pub async fn update_user(
 
 pub async fn delete_user(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(id): Path<i32>
+    Path(firebase_user_id): Path<String>  // firebase_user_id は String 型
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query!("DELETE FROM Users WHERE user_id = ?", id)
+    match query!("DELETE FROM Users WHERE firebase_user_id = ?", firebase_user_id)
         .execute(&db_pool)
         .await
     {

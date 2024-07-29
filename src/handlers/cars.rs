@@ -16,7 +16,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Deserialize, Serialize)]
 pub struct CreateCarRequest {
     car: Car,
-    user_id: i32,
+    firebase_user_id: String,
 }
 
 pub async fn create_car(
@@ -25,7 +25,7 @@ pub async fn create_car(
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    let CreateCarRequest { car, user_id } = req;
+    let CreateCarRequest { car, firebase_user_id } = req;
 
     let mut tx: Transaction<'_, MySql> = match db_pool.begin().await {
         Ok(tx) => tx,
@@ -61,8 +61,8 @@ pub async fn create_car(
             .unwrap();
 
             let user_car_result = query!(
-                "INSERT INTO user_car (user_id, car_id) VALUES (?, ?)",
-                user_id,
+                "INSERT INTO user_car (firebase_user_id, car_id) VALUES (?, ?)",
+                firebase_user_id,
                 car_id
             )
             .execute(&mut *tx)
@@ -110,14 +110,14 @@ pub async fn get_cars(
 
 pub async fn get_car(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(id): Path<i32>
+    Path(car_id): Path<i32>
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
     match query_as!(
         Car,
         "SELECT car_id, car_name, carmodelnum, car_color, car_mileage, car_isflooding as `car_isflooding: bool`, car_issmoked as `car_issmoked: bool`, car_image_url, created_at, updated_at FROM Cars WHERE car_id = ?",
-        id
+        car_id
     )
     .fetch_one(&db_pool)
     .await
@@ -132,7 +132,7 @@ pub async fn get_car(
 
 pub async fn update_car(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(id): Path<i32>,
+    Path(car_id): Path<i32>,
     Json(updated_car): Json<Car>
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
@@ -146,7 +146,7 @@ pub async fn update_car(
         updated_car.car_isflooding as i8,
         updated_car.car_issmoked as i8,
         updated_car.car_image_url,
-        id
+        car_id
     )
     .execute(&db_pool)
     .await;
@@ -156,7 +156,7 @@ pub async fn update_car(
             match query_as!(
                 Car,
                 "SELECT car_id, car_name, carmodelnum, car_color, car_mileage, car_isflooding as `car_isflooding: bool`, car_issmoked as `car_issmoked: bool`, car_image_url, created_at, updated_at FROM Cars WHERE car_id = ?",
-                id
+                car_id
             )
             .fetch_one(&db_pool)
             .await
@@ -177,7 +177,7 @@ pub async fn update_car(
 
 pub async fn delete_car(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(id): Path<i32>
+    Path(car_id): Path<i32>
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
@@ -191,7 +191,7 @@ pub async fn delete_car(
 
     let user_car_result = query!(
         "DELETE FROM user_car WHERE car_id = ?",
-        id
+        car_id
     )
     .execute(&mut *tx)
     .await;
@@ -200,7 +200,7 @@ pub async fn delete_car(
         Ok(_) => {
             let car_result = query!(
                 "DELETE FROM Cars WHERE car_id = ?",
-                id
+                car_id
             )
             .execute(&mut *tx)
             .await;
@@ -273,7 +273,7 @@ pub async fn delete_car_image(
 
 pub async fn get_user_cars(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(user_id): Path<i32>
+    Path(firebase_user_id): Path<String>
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
@@ -282,8 +282,8 @@ pub async fn get_user_cars(
         "SELECT c.car_id, c.car_name, c.carmodelnum, c.car_color, c.car_mileage, c.car_isflooding as `car_isflooding: bool`, c.car_issmoked as `car_issmoked: bool`, c.car_image_url, c.created_at, c.updated_at 
          FROM Cars c
          JOIN user_car uc ON c.car_id = uc.car_id
-         WHERE uc.user_id = ?",
-        user_id
+         WHERE uc.firebase_user_id = ?",
+        firebase_user_id
     )
     .fetch_all(&db_pool)
     .await

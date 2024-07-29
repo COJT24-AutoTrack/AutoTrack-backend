@@ -6,11 +6,10 @@ FLUSH PRIVILEGES;
 USE `auto_track-db`;
 
 CREATE TABLE Users (
-    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    firebase_user_id VARCHAR(255) NOT NULL UNIQUE,
     user_email VARCHAR(255) NOT NULL UNIQUE,
     user_name VARCHAR(255) NOT NULL,
     user_password VARCHAR(255) NOT NULL,
-    firebase_user_id VARCHAR(255) NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -29,12 +28,12 @@ CREATE TABLE Cars (
 );
 
 CREATE TABLE user_car (
-    user_id INT NOT NULL,
+    firebase_user_id VARCHAR(255) NOT NULL,
     car_id INT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES Users(user_id),
+    FOREIGN KEY (firebase_user_id) REFERENCES Users(firebase_user_id),
     FOREIGN KEY (car_id) REFERENCES Cars(car_id),
-    PRIMARY KEY (user_id, car_id),
-    INDEX (user_id),
+    PRIMARY KEY (firebase_user_id, car_id),
+    INDEX (firebase_user_id),
     INDEX (car_id)
 );
 
