@@ -7,6 +7,7 @@ pub struct User {
     pub user_email: String,
     pub user_name: String,
     pub user_password: String,
+    pub firebase_user_id: String,
     pub created_at: Option<OffsetDateTime>,
     pub updated_at: Option<OffsetDateTime>,
 }
