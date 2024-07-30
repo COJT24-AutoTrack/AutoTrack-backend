@@ -35,16 +35,6 @@
       },
       {
         "ordinal": 3,
-        "name": "user_password",
-        "type_info": {
-          "type": "VarString",
-          "flags": "NOT_NULL | NO_DEFAULT_VALUE",
-          "char_set": 224,
-          "max_size": 1020
-        }
-      },
-      {
-        "ordinal": 4,
         "name": "created_at",
         "type_info": {
           "type": "Timestamp",
@@ -54,7 +44,7 @@
         }
       },
       {
-        "ordinal": 5,
+        "ordinal": 4,
         "name": "updated_at",
         "type_info": {
           "type": "Timestamp",
@@ -68,7 +58,6 @@
       "Right": 1
     },
     "nullable": [
-      false,
       false,
       false,
       false,

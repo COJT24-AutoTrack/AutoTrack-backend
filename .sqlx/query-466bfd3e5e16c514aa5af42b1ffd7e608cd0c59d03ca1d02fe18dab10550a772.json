@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "UPDATE Users SET user_email = ?, user_name = ?, firebase_user_id = ? WHERE firebase_user_id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 4
+    },
+    "nullable": []
+  },
+  "hash": "466bfd3e5e16c514aa5af42b1ffd7e608cd0c59d03ca1d02fe18dab10550a772"
+}
