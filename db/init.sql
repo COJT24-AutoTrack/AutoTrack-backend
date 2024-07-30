@@ -51,7 +51,8 @@ CREATE TABLE Tunings (
 CREATE TABLE Maintenances (
     maint_id INT AUTO_INCREMENT PRIMARY KEY,
     car_id INT NOT NULL,
-    maint_type VARCHAR(255) NOT NULL,
+    maint_type ENUM('Oil Change', 'Oil Filter Change', 'Headlight Change', 'Position Light Change', 'Fog Light Change', 'Turn Signal Change', 'Brake Light Change', 'License Plate Light Change', 'Backup Light Change', 'Car Wash', 'Wiper Blade Change', 'Brake Pad Change', 'Brake Disc Change', 'Tire Change', 'Battery Change', 'Timing Belt Change', 'Coolant Refill', 'Washer Fluid Refill', 'Other') NOT NULL,
+    maint_title VARCHAR(255) NOT NULL,
     maint_date DATE NOT NULL,
     maint_description TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
