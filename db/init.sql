@@ -1,7 +1,6 @@
 CREATE DATABASE IF NOT EXISTS `auto_track-db`;
 CREATE USER IF NOT EXISTS 'user'@'%' IDENTIFIED BY 'password';
 GRANT ALL PRIVILEGES ON `auto_track-db`.* TO 'user'@'%';
-SET sql_mode = ALLOW_INVALID_DATES;
 FLUSH PRIVILEGES;
 
 USE `auto_track-db`;
@@ -41,7 +40,7 @@ CREATE TABLE Tunings (
     tuning_id INT AUTO_INCREMENT PRIMARY KEY,
     car_id INT NOT NULL,
     tuning_name VARCHAR(255) NOT NULL,
-    tuning_date TIMESTAMP NOT NULL,
+    tuning_date VARCHAR(255) NOT NULL,
     tuning_description TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -54,7 +53,7 @@ CREATE TABLE Maintenances (
     car_id INT NOT NULL,
     maint_type ENUM('Oil Change', 'Oil Filter Change', 'Headlight Change', 'Position Light Change', 'Fog Light Change', 'Turn Signal Change', 'Brake Light Change', 'License Plate Light Change', 'Backup Light Change', 'Car Wash', 'Wiper Blade Change', 'Brake Pad Change', 'Brake Disc Change', 'Tire Change', 'Battery Change', 'Timing Belt Change', 'Coolant Refill', 'Washer Fluid Refill', 'Other') NOT NULL,
     maint_title VARCHAR(255) NOT NULL,
-    maint_date TIMESTAMP NOT NULL,
+    maint_date VARCHAR(255) NOT NULL,
     maint_description TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -65,7 +64,7 @@ CREATE TABLE Maintenances (
 CREATE TABLE FuelEfficiencies (
     fe_id INT AUTO_INCREMENT PRIMARY KEY,
     car_id INT NOT NULL,
-    fe_date TIMESTAMP NOT NULL,
+    fe_date VARCHAR(255) NOT NULL,
     fe_amount FLOAT NOT NULL,
     fe_unitprice FLOAT NOT NULL,
     fe_mileage INT NOT NULL,
@@ -78,7 +77,7 @@ CREATE TABLE FuelEfficiencies (
 CREATE TABLE Accidents (
     accident_id INT AUTO_INCREMENT PRIMARY KEY,
     car_id INT NOT NULL,
-    accident_date TIMESTAMP NOT NULL,
+    accident_date VARCHAR(255) NOT NULL,
     accident_description TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -90,8 +89,8 @@ CREATE TABLE PeriodicInspection (
     pi_id INT AUTO_INCREMENT PRIMARY KEY,
     car_id INT NOT NULL,
     pi_name VARCHAR(255) NOT NULL,
-    pi_date TIMESTAMP NOT NULL,
-    pi_nextdate TIMESTAMP NOT NULL,
+    pi_date VARCHAR(255) NOT NULL,
+    pi_nextdate VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (car_id) REFERENCES Cars(car_id),

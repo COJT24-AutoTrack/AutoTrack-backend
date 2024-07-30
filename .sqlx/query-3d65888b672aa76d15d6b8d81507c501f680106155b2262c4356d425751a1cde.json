@@ -34,18 +34,18 @@
         "ordinal": 3,
         "name": "pi_date",
         "type_info": {
-          "type": "Timestamp",
-          "flags": "NOT_NULL | BINARY | TIMESTAMP | ON_UPDATE_NOW",
-          "max_size": 19
+          "type": "VarString",
+          "flags": "NOT_NULL | NO_DEFAULT_VALUE",
+          "max_size": 1020
         }
       },
       {
         "ordinal": 4,
         "name": "pi_nextdate",
         "type_info": {
-          "type": "Timestamp",
-          "flags": "NOT_NULL | BINARY",
-          "max_size": 19
+          "type": "VarString",
+          "flags": "NOT_NULL | NO_DEFAULT_VALUE",
+          "max_size": 1020
         }
       },
       {

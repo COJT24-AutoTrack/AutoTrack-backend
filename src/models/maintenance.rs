@@ -8,7 +8,7 @@ pub struct Maintenance {
     pub car_id: i32,
     pub maint_type: String, // You can use an enum here if you want to strictly type the maintenance types
     pub maint_title: String,
-    pub maint_date: OffsetDateTime,
+    pub maint_date: String,
     pub maint_description: String,
     pub created_at: Option<OffsetDateTime>,
     pub updated_at: Option<OffsetDateTime>,

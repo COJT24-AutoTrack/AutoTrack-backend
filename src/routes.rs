@@ -155,9 +155,7 @@ pub fn create_routes(state: Arc<Mutex<AppState>>) -> Router {
         .layer(DefaultBodyLimit::max(100 * 1024 * 1024)) // 100MBのボディサイズ制限
         .layer(Extension(state))
 }
-
 struct SecurityAddon;
-
 impl Modify for SecurityAddon {
     fn modify(&self, openapi: &mut utoipa::openapi::OpenApi) {
         let Some(schema) = openapi.components.as_mut() else {
