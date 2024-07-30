@@ -121,7 +121,7 @@ pub async fn update_maintenance(
         Ok(_) => {
             match query_as!(
                 Maintenance,
-                "SELECT maint_id, car_id, maint_type, maint_date, maint_description, created_at, updated_at FROM Maintenances WHERE maint_id = ?",
+                "SELECT * FROM Maintenances WHERE maint_id = ?",
                 id
             )
             .fetch_one(&db_pool)
