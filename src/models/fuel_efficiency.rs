@@ -1,4 +1,4 @@
-use chrono::NaiveDate;
+use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
 
@@ -6,7 +6,7 @@ use time::OffsetDateTime;
 pub struct FuelEfficiency {
     pub fe_id: Option<i32>,
     pub car_id: i32,
-    pub fe_date: NaiveDate,
+    pub fe_date: DateTime<Local>,
     pub fe_amount: f32,
     pub fe_unitprice: f32,
     pub fe_mileage: i32,

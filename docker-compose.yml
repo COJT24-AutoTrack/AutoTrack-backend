@@ -41,6 +41,7 @@ services:
       - ./db:/docker-entrypoint-initdb.d
     networks:
       - auto_track-network
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_general_ci','--default-time-zone=+09:00']
     deploy:
       resources:
         limits:
