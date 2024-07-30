@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "INSERT INTO Maintenances (car_id, maint_type, maint_title, maint_date, maint_description) VALUES (?, ?, ?, ?, ?)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 5
+    },
+    "nullable": []
+  },
+  "hash": "7c5d0d653ea1178fbc0b993c7526db8838321b214409fa167b5d0a8236c3c989"
+}

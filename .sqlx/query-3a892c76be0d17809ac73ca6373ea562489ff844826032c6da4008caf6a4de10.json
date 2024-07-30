@@ -9,7 +9,6 @@
         "type_info": {
           "type": "Long",
           "flags": "NOT_NULL | PRIMARY_KEY | AUTO_INCREMENT",
-          "char_set": 63,
           "max_size": 11
         }
       },
@@ -19,7 +18,6 @@
         "type_info": {
           "type": "Long",
           "flags": "NOT_NULL | MULTIPLE_KEY | NO_DEFAULT_VALUE",
-          "char_set": 63,
           "max_size": 11
         }
       },
@@ -27,49 +25,53 @@
         "ordinal": 2,
         "name": "maint_type",
         "type_info": {
-          "type": "VarString",
-          "flags": "NOT_NULL | NO_DEFAULT_VALUE",
-          "char_set": 224,
-          "max_size": 1020
+          "type": "String",
+          "flags": "NOT_NULL | ENUM | NO_DEFAULT_VALUE",
+          "max_size": 104
         }
       },
       {
         "ordinal": 3,
-        "name": "maint_date",
+        "name": "maint_title",
         "type_info": {
-          "type": "Date",
-          "flags": "NOT_NULL | BINARY | NO_DEFAULT_VALUE",
-          "char_set": 63,
-          "max_size": 10
+          "type": "VarString",
+          "flags": "NOT_NULL | NO_DEFAULT_VALUE",
+          "max_size": 1020
         }
       },
       {
         "ordinal": 4,
-        "name": "maint_description",
-        "type_info": {
-          "type": "Blob",
-          "flags": "NOT_NULL | BLOB | NO_DEFAULT_VALUE",
-          "char_set": 224,
-          "max_size": 262140
-        }
-      },
-      {
-        "ordinal": 5,
-        "name": "created_at",
+        "name": "maint_date",
         "type_info": {
           "type": "Timestamp",
-          "flags": "NOT_NULL | BINARY | TIMESTAMP",
-          "char_set": 63,
+          "flags": "NOT_NULL | BINARY | TIMESTAMP | ON_UPDATE_NOW",
           "max_size": 19
         }
       },
       {
+        "ordinal": 5,
+        "name": "maint_description",
+        "type_info": {
+          "type": "Blob",
+          "flags": "NOT_NULL | BLOB | NO_DEFAULT_VALUE",
+          "max_size": 262140
+        }
+      },
+      {
         "ordinal": 6,
+        "name": "created_at",
+        "type_info": {
+          "type": "Timestamp",
+          "flags": "NOT_NULL | BINARY | TIMESTAMP",
+          "max_size": 19
+        }
+      },
+      {
+        "ordinal": 7,
         "name": "updated_at",
         "type_info": {
           "type": "Timestamp",
           "flags": "NOT_NULL | BINARY | TIMESTAMP | ON_UPDATE_NOW",
-          "char_set": 63,
           "max_size": 19
         }
       }
@@ -78,6 +80,7 @@
       "Right": 0
     },
     "nullable": [
+      false,
       false,
       false,
       false,
