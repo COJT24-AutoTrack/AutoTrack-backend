@@ -1,5 +1,5 @@
-use std::ops::Deref;
 use rs_firebase_admin_sdk::{App, CustomServiceAccount, LiveAuthAdmin};
+use std::ops::Deref;
 
 pub struct FirebaseAuth(LiveAuthAdmin);
 

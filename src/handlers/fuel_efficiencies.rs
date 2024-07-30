@@ -1,18 +1,18 @@
-use axum::{
-    extract::{Json, Extension, Path},
-    response::IntoResponse,
-    http::StatusCode,
-};
-use sqlx::{query_as, query};
-use tokio::sync::Mutex;
-use std::sync::Arc;
-use crate::state::AppState;
 use crate::models::fuel_efficiency::FuelEfficiency;
+use crate::state::AppState;
+use axum::{
+    extract::{Extension, Json, Path},
+    http::StatusCode,
+    response::IntoResponse,
+};
 use serde_json::json;
+use sqlx::{query, query_as};
+use std::sync::Arc;
+use tokio::sync::Mutex;
 
 pub async fn create_fuel_efficiency(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Json(new_fuel_efficiency): Json<FuelEfficiency>
+    Json(new_fuel_efficiency): Json<FuelEfficiency>,
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
@@ -50,9 +50,8 @@ pub async fn create_fuel_efficiency(
     }
 }
 
-
 pub async fn get_fuel_efficiencies(
-    Extension(state): Extension<Arc<Mutex<AppState>>>
+    Extension(state): Extension<Arc<Mutex<AppState>>>,
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
@@ -70,13 +69,17 @@ pub async fn get_fuel_efficiencies(
 
 pub async fn get_fuel_efficiency(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(id): Path<i32>
+    Path(id): Path<i32>,
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query_as!(FuelEfficiency, "SELECT * FROM FuelEfficiencies WHERE fe_id = ?", id)
-        .fetch_one(&db_pool)
-        .await
+    match query_as!(
+        FuelEfficiency,
+        "SELECT * FROM FuelEfficiencies WHERE fe_id = ?",
+        id
+    )
+    .fetch_one(&db_pool)
+    .await
     {
         Ok(fuel_efficiency) => (StatusCode::OK, Json(fuel_efficiency)).into_response(),
         Err(e) => {
@@ -89,7 +92,7 @@ pub async fn get_fuel_efficiency(
 pub async fn update_fuel_efficiency(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
     Path(id): Path<i32>,
-    Json(updated_fuel_efficiency): Json<FuelEfficiency>
+    Json(updated_fuel_efficiency): Json<FuelEfficiency>,
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
@@ -128,10 +131,9 @@ pub async fn update_fuel_efficiency(
     }
 }
 
-
 pub async fn delete_fuel_efficiency(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(id): Path<i32>
+    Path(id): Path<i32>,
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
@@ -149,7 +151,7 @@ pub async fn delete_fuel_efficiency(
 
 pub async fn calculate_fuel_efficiencies(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(car_id): Path<i32>
+    Path(car_id): Path<i32>,
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
@@ -173,7 +175,11 @@ pub async fn calculate_fuel_efficiencies(
     };
 
     if fuel_efficiencies.len() < 2 {
-        return (StatusCode::BAD_REQUEST, "Not enough data to calculate fuel efficiency").into_response();
+        return (
+            StatusCode::BAD_REQUEST,
+            "Not enough data to calculate fuel efficiency",
+        )
+            .into_response();
     }
 
     let mut total_fuel = 0.0;
@@ -201,7 +207,11 @@ pub async fn calculate_fuel_efficiencies(
     }
 
     if total_distance == 0 {
-        return (StatusCode::BAD_REQUEST, "Total distance is zero, cannot calculate fuel efficiency").into_response();
+        return (
+            StatusCode::BAD_REQUEST,
+            "Total distance is zero, cannot calculate fuel efficiency",
+        )
+            .into_response();
     }
 
     let total_fuel_efficiency = total_distance as f32 / total_fuel;

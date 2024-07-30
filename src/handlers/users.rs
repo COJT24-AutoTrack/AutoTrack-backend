@@ -1,17 +1,17 @@
-use axum::{
-    extract::{Json, Extension, Path},
-    response::IntoResponse,
-    http::StatusCode,
-};
-use sqlx::{query_as, query};
-use tokio::sync::Mutex;
-use std::sync::Arc;
-use crate::state::AppState;
 use crate::models::user::User;
+use crate::state::AppState;
+use axum::{
+    extract::{Extension, Json, Path},
+    http::StatusCode,
+    response::IntoResponse,
+};
+use sqlx::{query, query_as};
+use std::sync::Arc;
+use tokio::sync::Mutex;
 
 pub async fn create_user(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Json(new_user): Json<User>
+    Json(new_user): Json<User>,
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
@@ -31,14 +31,15 @@ pub async fn create_user(
                 new_user.user_email
             )
             .fetch_one(&db_pool)
-            .await {
+            .await
+            {
                 Ok(user) => (StatusCode::CREATED, Json(user)).into_response(),
                 Err(e) => {
                     eprintln!("Failed to fetch user after creation: {:?}", e);
                     StatusCode::INTERNAL_SERVER_ERROR.into_response()
                 }
             }
-        },
+        }
         Err(e) => {
             eprintln!("Failed to create user: {:?}", e);
             StatusCode::INTERNAL_SERVER_ERROR.into_response()
@@ -46,9 +47,7 @@ pub async fn create_user(
     }
 }
 
-pub async fn get_users(
-    Extension(state): Extension<Arc<Mutex<AppState>>>
-) -> impl IntoResponse {
+pub async fn get_users(Extension(state): Extension<Arc<Mutex<AppState>>>) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
     match query_as!(User, "SELECT * FROM Users")
@@ -65,13 +64,17 @@ pub async fn get_users(
 
 pub async fn get_user(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(firebase_user_id): Path<String>  // firebase_user_id は String 型
+    Path(firebase_user_id): Path<String>, // firebase_user_id は String 型
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query_as!(User, "SELECT * FROM Users WHERE firebase_user_id = ?", firebase_user_id)
-        .fetch_one(&db_pool)
-        .await
+    match query_as!(
+        User,
+        "SELECT * FROM Users WHERE firebase_user_id = ?",
+        firebase_user_id
+    )
+    .fetch_one(&db_pool)
+    .await
     {
         Ok(user) => (StatusCode::OK, Json(user)).into_response(),
         Err(e) => {
@@ -83,8 +86,8 @@ pub async fn get_user(
 
 pub async fn update_user(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(firebase_user_id): Path<String>,  // firebase_user_id は String 型
-    Json(updated_user): Json<User>
+    Path(firebase_user_id): Path<String>, // firebase_user_id は String 型
+    Json(updated_user): Json<User>,
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
@@ -118,13 +121,16 @@ pub async fn update_user(
 
 pub async fn delete_user(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(firebase_user_id): Path<String>  // firebase_user_id は String 型
+    Path(firebase_user_id): Path<String>, // firebase_user_id は String 型
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query!("DELETE FROM Users WHERE firebase_user_id = ?", firebase_user_id)
-        .execute(&db_pool)
-        .await
+    match query!(
+        "DELETE FROM Users WHERE firebase_user_id = ?",
+        firebase_user_id
+    )
+    .execute(&db_pool)
+    .await
     {
         Ok(_) => StatusCode::NO_CONTENT.into_response(),
         Err(e) => {

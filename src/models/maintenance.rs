@@ -1,13 +1,13 @@
-use std::collections::HashMap;
-use serde::{Deserialize, Serialize};
-use time::OffsetDateTime;
 use chrono::NaiveDate;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use time::OffsetDateTime;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Maintenance {
     pub maint_id: Option<i32>,
     pub car_id: i32,
-    pub maint_type: String,  // You can use an enum here if you want to strictly type the maintenance types
+    pub maint_type: String, // You can use an enum here if you want to strictly type the maintenance types
     pub maint_title: String,
     pub maint_date: NaiveDate,
     pub maint_description: String,

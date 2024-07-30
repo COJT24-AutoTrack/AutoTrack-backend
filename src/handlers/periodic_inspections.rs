@@ -1,17 +1,17 @@
-use axum::{
-    extract::{Json, Extension, Path},
-    response::IntoResponse,
-    http::StatusCode,
-};
-use sqlx::{query_as, query};
-use tokio::sync::Mutex;
-use std::sync::Arc;
-use crate::state::AppState;
 use crate::models::periodic_inspection::PeriodicInspection;
+use crate::state::AppState;
+use axum::{
+    extract::{Extension, Json, Path},
+    http::StatusCode,
+    response::IntoResponse,
+};
+use sqlx::{query, query_as};
+use std::sync::Arc;
+use tokio::sync::Mutex;
 
 pub async fn create_periodic_inspection(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Json(new_periodic_inspection): Json<PeriodicInspection>
+    Json(new_periodic_inspection): Json<PeriodicInspection>,
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
@@ -48,9 +48,8 @@ pub async fn create_periodic_inspection(
     }
 }
 
-
 pub async fn get_periodic_inspections(
-    Extension(state): Extension<Arc<Mutex<AppState>>>
+    Extension(state): Extension<Arc<Mutex<AppState>>>,
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
@@ -68,13 +67,17 @@ pub async fn get_periodic_inspections(
 
 pub async fn get_periodic_inspection(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(pi_id): Path<i32>
+    Path(pi_id): Path<i32>,
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query_as!(PeriodicInspection, "SELECT * FROM PeriodicInspection WHERE pi_id = ?", pi_id)
-        .fetch_one(&db_pool)
-        .await
+    match query_as!(
+        PeriodicInspection,
+        "SELECT * FROM PeriodicInspection WHERE pi_id = ?",
+        pi_id
+    )
+    .fetch_one(&db_pool)
+    .await
     {
         Ok(periodic_inspection) => (StatusCode::OK, Json(periodic_inspection)).into_response(),
         Err(e) => {
@@ -87,7 +90,7 @@ pub async fn get_periodic_inspection(
 pub async fn update_periodic_inspection(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
     Path(pi_id): Path<i32>,
-    Json(updated_periodic_inspection): Json<PeriodicInspection>
+    Json(updated_periodic_inspection): Json<PeriodicInspection>,
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
@@ -125,10 +128,9 @@ pub async fn update_periodic_inspection(
     }
 }
 
-
 pub async fn delete_periodic_inspection(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(pi_id): Path<i32>
+    Path(pi_id): Path<i32>,
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 

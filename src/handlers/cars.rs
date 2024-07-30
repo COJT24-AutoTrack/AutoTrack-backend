@@ -1,17 +1,17 @@
-use axum::{
-    extract::{Json, Extension, Path},
-    response::IntoResponse,
-    http::StatusCode,
-};
-use sqlx::{query_as, query, MySql, Transaction};
-use tokio::sync::Mutex;
-use std::sync::Arc;
-use crate::state::AppState;
 use crate::models::car::Car;
-use crate::models::tuning::Tuning;
-use crate::models::maintenance::Maintenance;
 use crate::models::fuel_efficiency::FuelEfficiency;
+use crate::models::maintenance::Maintenance;
+use crate::models::tuning::Tuning;
+use crate::state::AppState;
+use axum::{
+    extract::{Extension, Json, Path},
+    http::StatusCode,
+    response::IntoResponse,
+};
 use serde::{Deserialize, Serialize};
+use sqlx::{query, query_as, MySql, Transaction};
+use std::sync::Arc;
+use tokio::sync::Mutex;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct CreateCarRequest {
@@ -21,11 +21,14 @@ pub struct CreateCarRequest {
 
 pub async fn create_car(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Json(req): Json<CreateCarRequest>
+    Json(req): Json<CreateCarRequest>,
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    let CreateCarRequest { car, firebase_user_id } = req;
+    let CreateCarRequest {
+        car,
+        firebase_user_id,
+    } = req;
 
     let mut tx: Transaction<'_, MySql> = match db_pool.begin().await {
         Ok(tx) => tx,
@@ -88,9 +91,7 @@ pub async fn create_car(
     }
 }
 
-pub async fn get_cars(
-    Extension(state): Extension<Arc<Mutex<AppState>>>
-) -> impl IntoResponse {
+pub async fn get_cars(Extension(state): Extension<Arc<Mutex<AppState>>>) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
     match query_as!(
@@ -110,7 +111,7 @@ pub async fn get_cars(
 
 pub async fn get_car(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(car_id): Path<i32>
+    Path(car_id): Path<i32>,
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
@@ -133,7 +134,7 @@ pub async fn get_car(
 pub async fn update_car(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
     Path(car_id): Path<i32>,
-    Json(updated_car): Json<Car>
+    Json(updated_car): Json<Car>,
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
@@ -177,7 +178,7 @@ pub async fn update_car(
 
 pub async fn delete_car(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(car_id): Path<i32>
+    Path(car_id): Path<i32>,
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
@@ -189,21 +190,15 @@ pub async fn delete_car(
         }
     };
 
-    let user_car_result = query!(
-        "DELETE FROM user_car WHERE car_id = ?",
-        car_id
-    )
-    .execute(&mut *tx)
-    .await;
+    let user_car_result = query!("DELETE FROM user_car WHERE car_id = ?", car_id)
+        .execute(&mut *tx)
+        .await;
 
     match user_car_result {
         Ok(_) => {
-            let car_result = query!(
-                "DELETE FROM Cars WHERE car_id = ?",
-                car_id
-            )
-            .execute(&mut *tx)
-            .await;
+            let car_result = query!("DELETE FROM Cars WHERE car_id = ?", car_id)
+                .execute(&mut *tx)
+                .await;
 
             match car_result {
                 Ok(_) => {
@@ -228,7 +223,7 @@ pub async fn delete_car(
 pub async fn update_car_image(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
     Path(car_id): Path<i32>,
-    Json(image_url): Json<String>
+    Json(image_url): Json<String>,
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
@@ -250,7 +245,7 @@ pub async fn update_car_image(
 }
 pub async fn delete_car_image(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(car_id): Path<i32>
+    Path(car_id): Path<i32>,
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
@@ -270,10 +265,9 @@ pub async fn delete_car_image(
     }
 }
 
-
 pub async fn get_user_cars(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(firebase_user_id): Path<String>
+    Path(firebase_user_id): Path<String>,
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
@@ -298,17 +292,13 @@ pub async fn get_user_cars(
 
 pub async fn get_car_tuning(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(car_id): Path<i32>
+    Path(car_id): Path<i32>,
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query_as!(
-        Tuning,
-        "SELECT * FROM Tunings WHERE car_id = ?",
-        car_id
-    )
-    .fetch_all(&db_pool)
-    .await
+    match query_as!(Tuning, "SELECT * FROM Tunings WHERE car_id = ?", car_id)
+        .fetch_all(&db_pool)
+        .await
     {
         Ok(tunings) => (StatusCode::OK, Json(tunings)).into_response(),
         Err(e) => {
@@ -320,7 +310,7 @@ pub async fn get_car_tuning(
 
 pub async fn get_car_maintenance(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(car_id): Path<i32>
+    Path(car_id): Path<i32>,
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
@@ -342,7 +332,7 @@ pub async fn get_car_maintenance(
 
 pub async fn get_car_fuel_efficiency(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(car_id): Path<i32>
+    Path(car_id): Path<i32>,
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 

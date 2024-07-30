@@ -5,7 +5,7 @@ use axum::{
 use cloudflare_r2_rs::r2::R2Manager;
 use dotenv::dotenv;
 use std::env;
-use tracing::{info, error};
+use tracing::{error, info};
 
 pub async fn upload_image(mut payload: Multipart) -> Result<Json<String>, Response> {
     dotenv().ok(); // 環境変数をロード
@@ -34,7 +34,9 @@ pub async fn upload_image(mut payload: Multipart) -> Result<Json<String>, Respon
                     .unwrap()
             })?;
             let key = format!("images/{}", file_name);
-            r2_manager.upload(&key, &content, None, Some("image/jpeg")).await;
+            r2_manager
+                .upload(&key, &content, None, Some("image/jpeg"))
+                .await;
 
             let url = format!("https://r2.autotrack.work/images/{}", file_name);
             info!("File uploaded successfully: {}", url);

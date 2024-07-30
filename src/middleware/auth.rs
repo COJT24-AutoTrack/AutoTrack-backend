@@ -1,6 +1,7 @@
 use std::sync::Arc;
 use std::time::Duration;
 
+use crate::state::AppState;
 use anyhow::Context as _;
 use axum::{
     extract::{Request, State},
@@ -16,7 +17,6 @@ use reqwest::ClientBuilder;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tokio::sync::Mutex;
-use crate::state::AppState;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct Claims {
@@ -54,8 +54,9 @@ impl IntoResponse for AppError {
             Json(json!({
                 "code": self.code,
                 "message": self.message,
-            }))
-        ).into_response()
+            })),
+        )
+            .into_response()
     }
 }
 

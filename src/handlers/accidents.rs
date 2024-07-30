@@ -27,7 +27,7 @@ pub async fn create_accident(
         Ok(result) => {
             match query_as!(
                 Accident,
-                "SELECT accident_id, car_id, accident_date, accident_description, created_at, updated_at FROM Accidents WHERE accident_id = ?",
+                "SELECT * FROM Accidents WHERE accident_id = ?",
                 result.last_insert_id()
             )
             .fetch_one(&db_pool)

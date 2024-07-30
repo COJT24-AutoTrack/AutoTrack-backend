@@ -1,17 +1,17 @@
+use crate::models::tuning::Tuning;
+use crate::state::AppState;
 use axum::{
-    extract::{Json, Extension, Path},
-    response::IntoResponse,
+    extract::{Extension, Json, Path},
     http::StatusCode,
+    response::IntoResponse,
 };
 use sqlx::{query, query_as};
-use tokio::sync::Mutex;
 use std::sync::Arc;
-use crate::state::AppState;
-use crate::models::tuning::Tuning;
+use tokio::sync::Mutex;
 
 pub async fn create_tuning(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Json(new_tuning): Json<Tuning>
+    Json(new_tuning): Json<Tuning>,
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
@@ -48,10 +48,7 @@ pub async fn create_tuning(
     }
 }
 
-
-pub async fn get_tunings(
-    Extension(state): Extension<Arc<Mutex<AppState>>>
-) -> impl IntoResponse {
+pub async fn get_tunings(Extension(state): Extension<Arc<Mutex<AppState>>>) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
     match query_as!(
@@ -71,7 +68,7 @@ pub async fn get_tunings(
 
 pub async fn get_tuning(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(id): Path<i32>
+    Path(id): Path<i32>,
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
@@ -94,7 +91,7 @@ pub async fn get_tuning(
 pub async fn update_tuning(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
     Path(id): Path<i32>,
-    Json(updated_tuning): Json<Tuning>
+    Json(updated_tuning): Json<Tuning>,
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
@@ -134,7 +131,7 @@ pub async fn update_tuning(
 
 pub async fn delete_tuning(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(id): Path<i32>
+    Path(id): Path<i32>,
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 

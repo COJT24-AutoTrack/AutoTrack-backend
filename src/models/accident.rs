@@ -1,6 +1,6 @@
+use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
-use chrono::NaiveDate;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Accident {
