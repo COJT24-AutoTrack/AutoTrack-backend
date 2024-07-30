@@ -1,17 +1,17 @@
-use axum::{
-    extract::{Json, Extension, Path},
-    response::IntoResponse,
-    http::StatusCode,
-};
-use sqlx::{query_as, query};
-use tokio::sync::Mutex;
-use std::sync::Arc;
-use crate::state::AppState;
 use crate::models::accident::Accident;
+use crate::state::AppState;
+use axum::{
+    extract::{Extension, Json, Path},
+    http::StatusCode,
+    response::IntoResponse,
+};
+use sqlx::{query, query_as};
+use std::sync::Arc;
+use tokio::sync::Mutex;
 
 pub async fn create_accident(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Json(new_accident): Json<Accident>
+    Json(new_accident): Json<Accident>,
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
@@ -39,7 +39,7 @@ pub async fn create_accident(
                     StatusCode::INTERNAL_SERVER_ERROR.into_response()
                 }
             }
-        },
+        }
         Err(e) => {
             eprintln!("Failed to create accident: {:?}", e);
             StatusCode::INTERNAL_SERVER_ERROR.into_response()
@@ -47,10 +47,7 @@ pub async fn create_accident(
     }
 }
 
-
-pub async fn get_accidents(
-    Extension(state): Extension<Arc<Mutex<AppState>>>
-) -> impl IntoResponse {
+pub async fn get_accidents(Extension(state): Extension<Arc<Mutex<AppState>>>) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
     match query_as!(Accident, "SELECT * FROM Accidents")
@@ -67,13 +64,17 @@ pub async fn get_accidents(
 
 pub async fn get_accident(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(accident_id): Path<i32>
+    Path(accident_id): Path<i32>,
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
-    match query_as!(Accident, "SELECT * FROM Accidents WHERE accident_id = ?", accident_id)
-        .fetch_one(&db_pool)
-        .await
+    match query_as!(
+        Accident,
+        "SELECT * FROM Accidents WHERE accident_id = ?",
+        accident_id
+    )
+    .fetch_one(&db_pool)
+    .await
     {
         Ok(accident) => (StatusCode::OK, Json(accident)).into_response(),
         Err(e) => {
@@ -86,7 +87,7 @@ pub async fn get_accident(
 pub async fn update_accident(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
     Path(accident_id): Path<i32>,
-    Json(updated_accident): Json<Accident>
+    Json(updated_accident): Json<Accident>,
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
@@ -123,10 +124,9 @@ pub async fn update_accident(
     }
 }
 
-
 pub async fn delete_accident(
     Extension(state): Extension<Arc<Mutex<AppState>>>,
-    Path(accident_id): Path<i32>
+    Path(accident_id): Path<i32>,
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
