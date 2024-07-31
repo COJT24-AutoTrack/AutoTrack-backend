@@ -16,3 +16,5 @@ Cargo.lock
 mysql_data
 
 .env
+
+ssl_certs

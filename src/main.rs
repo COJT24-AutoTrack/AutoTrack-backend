@@ -11,6 +11,11 @@ use std::env;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 use tracing_subscriber::EnvFilter;
+use tokio_rustls::rustls::{self, Certificate, PrivateKey};
+use tokio_rustls::TlsAcceptor;
+use tokio::net::TcpListener;
+use std::fs::File;
+use std::io::{self, BufReader};
 
 #[tokio::main]
 async fn main() {
@@ -35,21 +40,19 @@ async fn main() {
     let app = routes::create_routes(state);
 
     let addr = std::net::SocketAddr::from(([0, 0, 0, 0], 8369));
-
+    
     // TLS証明書と秘密鍵の読み込み
-    let certs = load_certs("path/to/your/cert.pem").expect("Failed to load certificate");
-    let key = load_private_key("path/to/your/key.pem").expect("Failed to load private key");
+    let certs = load_certs("/etc/ssl/certs/cert.pem").expect("Failed to load certificate");
+    let key = load_private_key("/etc/ssl/private/key.pem").expect("Failed to load private key");
     let config = rustls::ServerConfig::builder()
         .with_safe_defaults()
         .with_no_client_auth()
         .with_single_cert(certs, key)
         .expect("Failed to configure TLS");
-    
-        let tls_acceptor = TlsAcceptor::from(Arc::new(config));
 
+    let tls_acceptor = TlsAcceptor::from(Arc::new(config));
+    let listener = TcpListener::bind(&addr).await.unwrap();
 
-    let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
-    
     loop {
         let (stream, peer_addr) = listener.accept().await.unwrap();
         let acceptor = tls_acceptor.clone();
