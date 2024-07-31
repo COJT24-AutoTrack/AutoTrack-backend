@@ -32,6 +32,8 @@ jsonwebtoken = "9.3.0"
 anyhow = "1.0.86"
 utoipa = "4.2.3"
 lazy_static = "1.5.0"
+tokio-rustls = "0.26.0"
+rustls-pemfile = "2.1.2"
 
 [[bin]]
 name = "auto_track-backend"
