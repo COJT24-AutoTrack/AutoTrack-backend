@@ -21,7 +21,7 @@ use axum::Json;
 use serde_json::json;
 
 pub async fn test() -> Json<serde_json::Value> {
-    Json(json!({ "message": "Hello World!!" }))
+    Json(json!({ "message": "Hello SSL!" }))
 }
 
 pub fn create_routes(state: Arc<Mutex<AppState>>) -> Router {
