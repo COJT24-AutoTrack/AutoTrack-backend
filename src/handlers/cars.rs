@@ -190,31 +190,48 @@ pub async fn delete_car(
         }
     };
 
-    let user_car_result = query!("DELETE FROM user_car WHERE car_id = ?", car_id)
+    // Delete related data from other tables
+    let tables = vec![
+        "FuelEfficiencies",
+        "Maintenances",
+        "Tunings",
+        "Accidents",
+        "PeriodicInspection",
+        "user_car",
+    ];
+
+    for table in tables {
+        let delete_result = query(&format!("DELETE FROM {} WHERE car_id = ?", table))
+            .bind(car_id)
+            .execute(&mut *tx)
+            .await;
+
+        if let Err(e) = delete_result {
+            tx.rollback().await.unwrap();
+            eprintln!("Failed to delete from {}: {:?}", table, e);
+            return StatusCode::INTERNAL_SERVER_ERROR.into_response();
+        }
+    }
+
+
+    // Finally, delete the car itself
+    let car_result = query!("DELETE FROM Cars WHERE car_id = ?", car_id)
         .execute(&mut *tx)
         .await;
 
-    match user_car_result {
+    match car_result {
         Ok(_) => {
-            let car_result = query!("DELETE FROM Cars WHERE car_id = ?", car_id)
-                .execute(&mut *tx)
-                .await;
-
-            match car_result {
-                Ok(_) => {
-                    tx.commit().await.unwrap();
-                    StatusCode::NO_CONTENT.into_response()
-                }
+            match tx.commit().await {
+                Ok(_) => StatusCode::NO_CONTENT.into_response(),
                 Err(e) => {
-                    tx.rollback().await.unwrap();
-                    eprintln!("Failed to delete car: {:?}", e);
+                    eprintln!("Failed to commit transaction: {:?}", e);
                     StatusCode::INTERNAL_SERVER_ERROR.into_response()
                 }
             }
         }
         Err(e) => {
             tx.rollback().await.unwrap();
-            eprintln!("Failed to delete user_car entry: {:?}", e);
+            eprintln!("Failed to delete car: {:?}", e);
             StatusCode::INTERNAL_SERVER_ERROR.into_response()
         }
     }
