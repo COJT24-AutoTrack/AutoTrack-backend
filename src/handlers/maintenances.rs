@@ -106,13 +106,15 @@ pub async fn update_maintenance(
 ) -> impl IntoResponse {
     let db_pool = state.lock().await.db_pool.clone();
 
+    let new_updated_maintenance = apply_maintenance_logic(updated_maintenance);
+
     match query!(
         "UPDATE Maintenances SET car_id = ?, maint_type = ?, maint_title = ?, maint_date = ?, maint_description = ? WHERE maint_id = ?",
-        updated_maintenance.car_id,
-        updated_maintenance.maint_type,
-        updated_maintenance.maint_title,
-        updated_maintenance.maint_date,
-        updated_maintenance.maint_description,
+        new_updated_maintenance.car_id,
+        new_updated_maintenance.maint_type,
+        new_updated_maintenance.maint_title,
+        new_updated_maintenance.maint_date,
+        new_updated_maintenance.maint_description,
         id
     )
     .execute(&db_pool)
