@@ -19,6 +19,7 @@ All private routes are protected by Firebase Authentication. Clients must includ
     ```json
     {
       "message": "Hello World!"
+    }
     ```
 
 ### Users
