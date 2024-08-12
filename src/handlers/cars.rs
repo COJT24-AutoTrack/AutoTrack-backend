@@ -213,22 +213,19 @@ pub async fn delete_car(
         }
     }
 
-
     // Finally, delete the car itself
     let car_result = query!("DELETE FROM Cars WHERE car_id = ?", car_id)
         .execute(&mut *tx)
         .await;
 
     match car_result {
-        Ok(_) => {
-            match tx.commit().await {
-                Ok(_) => StatusCode::NO_CONTENT.into_response(),
-                Err(e) => {
-                    eprintln!("Failed to commit transaction: {:?}", e);
-                    StatusCode::INTERNAL_SERVER_ERROR.into_response()
-                }
+        Ok(_) => match tx.commit().await {
+            Ok(_) => StatusCode::NO_CONTENT.into_response(),
+            Err(e) => {
+                eprintln!("Failed to commit transaction: {:?}", e);
+                StatusCode::INTERNAL_SERVER_ERROR.into_response()
             }
-        }
+        },
         Err(e) => {
             tx.rollback().await.unwrap();
             eprintln!("Failed to delete car: {:?}", e);

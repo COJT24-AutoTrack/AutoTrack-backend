@@ -9,9 +9,9 @@ use axum;
 use state::AppState;
 use std::env;
 use std::sync::Arc;
+use tokio::net::TcpListener;
 use tokio::sync::Mutex;
 use tracing_subscriber::EnvFilter;
-use tokio::net::TcpListener;
 
 #[tokio::main]
 async fn main() {
@@ -40,5 +40,4 @@ async fn main() {
     let listener = TcpListener::bind(&addr).await.unwrap();
 
     axum::serve(listener, app).await.unwrap();
-
 }
