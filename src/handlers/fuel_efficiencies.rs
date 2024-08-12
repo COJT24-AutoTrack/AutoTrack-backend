@@ -183,7 +183,7 @@ pub async fn calculate_fuel_efficiencies(
     }
 
     let mut total_fuel = 0.0;
-    let mut total_distance = 0;
+    let mut total_distance = 0.0;
     let mut fuel_efficiency_records = Vec::new();
 
     for i in 1..fuel_efficiencies.len() {
@@ -192,7 +192,7 @@ pub async fn calculate_fuel_efficiencies(
         let distance = current.fe_mileage;
         let fuel = current.fe_amount;
 
-        if distance <= 0 || fuel <= 0.0 {
+        if distance <= 0.0 || fuel <= 0.0 {
             return (StatusCode::BAD_REQUEST, "Invalid mileage or fuel data").into_response();
         }
 
@@ -206,7 +206,7 @@ pub async fn calculate_fuel_efficiencies(
         total_distance += distance;
     }
 
-    if total_distance == 0 {
+    if total_distance == 0.0 {
         return (
             StatusCode::BAD_REQUEST,
             "Total distance is zero, cannot calculate fuel efficiency",
